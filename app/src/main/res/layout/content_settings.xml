@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="16dp"
+    android:layout_marginTop="75dp">
+
+    <TextView
+        android:id="@+id/contact_form_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginBottom="16dp"
+        android:layout_marginTop="5dp"
+        android:text="Config. General"
+        android:gravity="center"
+        android:textSize="40sp"
+        android:typeface="serif" />
+
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <EditText
+            android:layout_width="253dp"
+            android:layout_height="wrap_content"
+            android:id="@+id/userEdit"
+            android:hint="Por favor ingrese el Usuario"
+            android:inputType="text" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <EditText
+            android:layout_width="253dp"
+            android:layout_height="wrap_content"
+            android:id="@+id/pwdEdit"
+            android:hint="Por favor ingrese la Clave"
+            android:inputType="textPassword" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <EditText
+            android:layout_width="261dp"
+            android:layout_height="wrap_content"
+            android:autofillHints="192.168.0.50"
+            android:id="@+id/ipEdittext"
+            android:hint="Por favor ingrese la IP"
+            android:inputType="phone" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:orientation="horizontal">
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:text="Guardar"
+            android:layout_marginTop="10dp"
+            android:layout_marginLeft="25dp"
+            android:id="@+id/saveIPButton" />
+
+    </LinearLayout>
+
+
+</LinearLayout>
