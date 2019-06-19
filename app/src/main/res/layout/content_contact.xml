@@ -29,6 +29,10 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/titulo3_string"/>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/titulo4_string"/>
             </TableRow>
 
         </TableLayout>
@@ -46,7 +50,18 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="20dp"
+            android:layout_marginRight="50dp"
+            android:layout_marginEnd="50dp"
             android:text="@string/start_call_button_string"/>
+
+        <Button
+            android:id="@+id/returnContactButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:layout_marginLeft="50dp"
+            android:layout_marginStart="50dp"
+            android:text="@string/cancel_contact_string"/>
 
     </LinearLayout>
 

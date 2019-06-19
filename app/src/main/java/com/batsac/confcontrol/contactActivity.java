@@ -2,6 +2,7 @@ package com.batsac.confcontrol;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.design.widget.FloatingActionButton;
@@ -54,6 +55,7 @@ public class contactActivity extends AppCompatActivity {
 
     List<String> nameList = new ArrayList<>();
     List<String> ipList = new ArrayList<>();
+    List<String> typeList = new ArrayList<>();
 
     Set<Integer> indexes = new HashSet<Integer>();
 
@@ -80,6 +82,7 @@ public class contactActivity extends AppCompatActivity {
         startRepeatingTask();
 
         Button startCallButton = findViewById(R.id.startCallButton);
+        Button returnContactButton = findViewById(R.id.returnContactButton);
 
         startCallButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -92,15 +95,29 @@ public class contactActivity extends AppCompatActivity {
                     indexes.toArray(indexArray);
 
                     callIp = ipList.get(indexArray[0]);
+                    String callType = typeList.get(indexArray[0]);
 
                     System.out.println("current IP selected: " + callIp);
 
                     try {
-                        callP2P(callIp);
+                        callP2P(callIp, callType);
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
                 }
+            }
+        });
+
+        returnContactButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+
+
+                stopRepeatingTask();
+
+                Intent intent = new Intent(getBaseContext(), MainActivity.class);
+                startActivity(intent);
             }
         });
     }
@@ -113,10 +130,6 @@ public class contactActivity extends AppCompatActivity {
             {
                 try
                 {
-//                    if (connected == 1)
-//                    {
-//                        getMailBoxData();
-//                    }
                     getMailBoxData();
                 } catch (IOException e) {
                     e.printStackTrace();
@@ -300,8 +313,17 @@ public class contactActivity extends AppCompatActivity {
                                     List<String> singleElement = new ArrayList<>();;
 
                                     nameList.add(currentObject.getString("szName"));
-                                    ipList.add(currentObject.getJSONObject("stIP").getString("szIP"));
-
+                                    JSONObject stIPObject =currentObject.getJSONObject("stIP");
+                                    if(stIPObject.length() > 0)
+                                    {
+                                        ipList.add(stIPObject.getString("szIP"));
+                                        typeList.add("H323");
+                                    }
+                                    else
+                                    {
+                                        ipList.add(currentObject.getJSONObject("stSIP").getString("szIP"));
+                                        typeList.add("SIP");
+                                    }
                                     System.out.println(singleElement);
 
                                 }
@@ -320,12 +342,14 @@ public class contactActivity extends AppCompatActivity {
                                     c1.setText(nameList.get(i));
                                     TextView c2 = new TextView(contactActivity.this);
                                     c2.setText(ipList.get(i));
-                                    CheckBox c3 = new CheckBox(contactActivity.this);
-                                    c3.setId(i);
+                                    TextView c3 = new TextView(contactActivity.this);
+                                    c3.setText(typeList.get(i));
+                                    CheckBox c4 = new CheckBox(contactActivity.this);
+                                    c4.setId(i);
 
                                     final int currentId = i;
 
-                                    c3.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                                    c4.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                                         @Override
                                         public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked) {
                                             if(isChecked)
@@ -342,6 +366,7 @@ public class contactActivity extends AppCompatActivity {
                                     tr.addView(c1);
                                     tr.addView(c2);
                                     tr.addView(c3);
+                                    tr.addView(c4);
                                     siteTable.addView(tr);
                                 }
 
@@ -368,48 +393,90 @@ public class contactActivity extends AppCompatActivity {
         });
     }
 
-    void callP2P(String dest) throws IOException
+    void callP2P(String dest, String type) throws IOException
     {
         OkHttpClient client = new OkHttpClient();
 
         System.out.println("destination IP Address: " + dest);
 
         MediaType mediaType = MediaType.parse("application/json");
-        RequestBody body = RequestBody.create(mediaType, "{\n\t\"acCSRFToken\": \"" +  acCSRFToken + "\",\n" +
-                "\t\"bIsLdapCall\":0,\n" +
-                "\t\"bIsVideoCall\":1,\n" +
-                "\t\"ucEnableH239\":0,\n" +
-                "\t\"stSiteInfo\":\n" +
-                "\t{\n" +
-                "\t\t\"uwID\":0,\n" +
-                "\t\t\"ucType\":3,\n" +
-                "\t\t\"ucDevice\":0,\n" +
-                "\t\t\"bIsLdap\":0,\n" +
-                "\t\t\"ucOnline\":0,\n" +
-                "\t\t\"uwSortPos\":0,\n" +
-                "\t\t\"stTPS\":{},\n" +
-                "\t\t\"stCTS\":{},\n" +
-                "\t\t\"stISDN\":{},\n" +
-                "\t\t\"stIP\":\n" +
-                "\t\t{\n" +
-                "\t\t\t\"ucBaudRate\":152,\n" +
-                "\t\t\t\"szAlias\":\"\",\n" +
-                "\t\t\t\"szIP\":\"\",\n" +
-                "\t\t\t\"szUri\":\"\"\n" +
-                "\t\t},\n" +
-                "\t\t\"stSIP\":{},\n" +
-                "\t\t\"stV35\":{},\n" +
-                "\t\t\"stE1\":{},\n" +
-                "\t\t\"stIPOverE1\":{},\n" +
-                "\t\t\"stT1\":{},\n" +
-                "\t\t\"stPhone\":{},\n" +
-                "\t\t\"stPSTN\":{},\n" +
-//                "\t\t\"szName\":\"192.168.0.51\",\n" +
-                "\t\t\"szName\":\"" + dest + "\",\n" +
-                "\t\t\"szPName\":\"\"\n" +
-                "\t},\n" +
-                "\t\"ucH235Policy\":0\n" +
-                "}");
+        RequestBody body;
+
+        if(type.equals("H323"))
+        {
+            body = RequestBody.create(mediaType, "{\n\t\"acCSRFToken\": \"" +  acCSRFToken + "\",\n" +
+                    "\t\"bIsLdapCall\":0,\n" +
+                    "\t\"bIsVideoCall\":1,\n" +
+                    "\t\"ucEnableH239\":0,\n" +
+                    "\t\"stSiteInfo\":\n" +
+                    "\t{\n" +
+                    "\t\t\"uwID\":0,\n" +
+                    "\t\t\"ucType\":3,\n" +
+                    "\t\t\"ucDevice\":0,\n" +
+                    "\t\t\"bIsLdap\":0,\n" +
+                    "\t\t\"ucOnline\":0,\n" +
+                    "\t\t\"uwSortPos\":0,\n" +
+                    "\t\t\"stTPS\":{},\n" +
+                    "\t\t\"stCTS\":{},\n" +
+                    "\t\t\"stISDN\":{},\n" +
+                    "\t\t\"stIP\":\n" +
+                    "\t\t{\n" +
+                    "\t\t\t\"ucBaudRate\":152,\n" +
+                    "\t\t\t\"szAlias\":\"\",\n" +
+                    "\t\t\t\"szIP\":\"\",\n" +
+                    "\t\t\t\"szUri\":\"\"\n" +
+                    "\t\t},\n" +
+                    "\t\t\"stSIP\":{},\n" +
+                    "\t\t\"stV35\":{},\n" +
+                    "\t\t\"stE1\":{},\n" +
+                    "\t\t\"stIPOverE1\":{},\n" +
+                    "\t\t\"stT1\":{},\n" +
+                    "\t\t\"stPhone\":{},\n" +
+                    "\t\t\"stPSTN\":{},\n" +
+                    "\t\t\"szName\":\"" + dest + "\",\n" +
+                    "\t\t\"szPName\":\"\"\n" +
+                    "\t},\n" +
+                    "\t\"ucH235Policy\":0\n" +
+                    "}");
+        }
+        else
+        {
+            body = RequestBody.create(mediaType, "{\n\t\"acCSRFToken\": \"" +  acCSRFToken + "\",\n" +
+                    "\t\"bIsLdapCall\":0,\n" +
+                    "\t\"bIsVideoCall\":1,\n" +
+                    "\t\"ucEnableH239\":0,\n" +
+                    "\t\"stSiteInfo\":\n" +
+                    "\t{\n" +
+                    "\t\t\"uwID\":0,\n" +
+                    "\t\t\"ucType\":8,\n" +
+                    "\t\t\"ucDevice\":0,\n" +
+                    "\t\t\"bIsLdap\":0,\n" +
+                    "\t\t\"ucOnline\":0,\n" +
+                    "\t\t\"uwSortPos\":0,\n" +
+                    "\t\t\"stTPS\":{},\n" +
+                    "\t\t\"stCTS\":{},\n" +
+                    "\t\t\"stISDN\":{},\n" +
+                    "\t\t\"stSIP\":\n" +
+                    "\t\t{\n" +
+                    "\t\t\t\"ucBaudRate\":152,\n" +
+                    "\t\t\t\"szAlias\":\"\",\n" +
+                    "\t\t\t\"szIP\":\"\",\n" +
+                    "\t\t\t\"szUri\":\"\"\n" +
+                    "\t\t},\n" +
+                    "\t\t\"stIP\":{},\n" +
+                    "\t\t\"stV35\":{},\n" +
+                    "\t\t\"stE1\":{},\n" +
+                    "\t\t\"stIPOverE1\":{},\n" +
+                    "\t\t\"stT1\":{},\n" +
+                    "\t\t\"stPhone\":{},\n" +
+                    "\t\t\"stPSTN\":{},\n" +
+                    "\t\t\"szName\":\"" + dest + "\",\n" +
+                    "\t\t\"szPName\":\"\"\n" +
+                    "\t},\n" +
+                    "\t\"ucH235Policy\":0\n" +
+                    "}");
+        }
+
         Request request = new Request.Builder()
                 .url("http://" + ipAddress +"/action.cgi?ActionID=WEB_CallSiteAPI")
                 .post(body)
@@ -474,6 +541,15 @@ public class contactActivity extends AppCompatActivity {
 
                                 Toast toast = Toast.makeText(context, toastText, duration);
                                 toast.show();
+
+                                Intent intent = new Intent(getBaseContext(), callControl.class);
+                                intent.putExtra("user", user);
+                                intent.putExtra("pwd", pwd);
+                                intent.putExtra("ipAddress", ipAddress);
+                                intent.putExtra("sessionId", sessionId);
+                                intent.putExtra("acCSRFToken", acCSRFToken);
+
+                                startActivity(intent);
                             }
 
 

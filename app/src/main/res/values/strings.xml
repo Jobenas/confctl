@@ -11,5 +11,11 @@
     <string name="start_call_button_string">Iniciar Llamada</string>
     <string name="titulo1_string">Nombre</string>
     <string name="titulo2_string">Dirección IP</string>
-    <string name="titulo3_string">Seleccionar</string>
+    <string name="titulo3_string">Tipo de Conexión</string>
+    <string name="titulo4_string">Seleccionar</string>
+    <string name="title_activity_call_control">callControl</string>
+    <string name="hang_up_button_string">Terminar\nLlamada</string>
+    <string name="accept_call_string">Aceptar\nLlamada</string>
+    <string name="decline_call_string">Rechazar\nLlamada</string>
+    <string name="cancel_contact_string">Regresar</string>
 </resources>
