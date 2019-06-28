@@ -12,9 +12,13 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
+            android:name=".incomingCallCtrl"
+            android:label="@string/title_activity_incoming_call_ctrl"
+            android:theme="@style/AppTheme.NoActionBar"></activity>
+        <activity
             android:name=".callControl"
             android:label="@string/title_activity_call_control"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
+            android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".contactActivity"
             android:label="@string/title_activity_contact"

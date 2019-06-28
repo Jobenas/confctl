@@ -5,7 +5,8 @@
     android:orientation="vertical"
     android:gravity="center"
     android:padding="16dp"
-    android:layout_marginTop="75dp">
+    android:background="@android:color/black"
+    >
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -14,22 +15,20 @@
         android:orientation="horizontal"
         android:gravity="center">
 
-        <Button
+        <ImageButton
+            android:id="@+id/onButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginRight="20dp"
             android:layout_marginEnd="20dp"
-            android:id="@+id/onButton"
-            android:text="@string/on_string"
-            />
+            android:layout_marginRight="20dp"
+            android:src="@drawable/b1"
+            android:background="@android:color/black"/>
 
         <Button
             android:id="@+id/presentationButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="20dp"
-            android:text="@string/presentation_string"
-            android:layout_marginStart="20dp" />
+            android:text="@string/presentation_string"/>
 
     </LinearLayout>
 

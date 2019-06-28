@@ -25,6 +25,7 @@ import org.w3c.dom.Text;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -36,6 +37,8 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
+
+import static java.lang.Integer.parseInt;
 
 public class contactActivity extends AppCompatActivity {
 
@@ -56,6 +59,7 @@ public class contactActivity extends AppCompatActivity {
     List<String> nameList = new ArrayList<>();
     List<String> ipList = new ArrayList<>();
     List<String> typeList = new ArrayList<>();
+    List<Integer> uwIdList = new ArrayList<>();
 
     Set<Integer> indexes = new HashSet<Integer>();
 
@@ -71,6 +75,7 @@ public class contactActivity extends AppCompatActivity {
         ipAddress = getIntent().getStringExtra("ipAddress");
         sessionId = getIntent().getStringExtra("sessionId");
         acCSRFToken = getIntent().getStringExtra("acCSRFToken");
+        connected = parseInt(getIntent().getStringExtra("connected"));
 
         try {
             getSiteList();
@@ -105,18 +110,57 @@ public class contactActivity extends AppCompatActivity {
                         e.printStackTrace();
                     }
                 }
+                else if(indexes.size() > 1)
+                {
+                    Integer[] indexArray = new Integer[indexes.size()];
+
+                    indexes.toArray(indexArray);
+
+                    StringBuilder idList = new StringBuilder("[");
+
+                    for(int i=0; i < indexes.size(); i++)
+                    {
+                        if(i == indexes.size() - 1)
+                        {
+                            idList.append(uwIdList.get(indexArray[i]).toString());
+                        }
+                        else
+                        {
+                            idList.append(uwIdList.get(indexArray[i]).toString()).append(",");
+                        }
+                    }
+                    idList.append("]");
+
+                    try {
+                        startConference(idList.toString());
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
             }
         });
 
         returnContactButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
-
-
                 stopRepeatingTask();
 
                 Intent intent = new Intent(getBaseContext(), MainActivity.class);
+
+                intent.putExtra("user", user);
+                intent.putExtra("pwd", pwd);
+                intent.putExtra("ipAddress", ipAddress);
+                intent.putExtra("sessionId", sessionId);
+                intent.putExtra("acCSRFToken", acCSRFToken);
+                if(connected == 0)
+                {
+                    intent.putExtra("connected", "0");
+                }
+                else if(connected == 1)
+                {
+                    intent.putExtra("connected", "1");
+                }
+
                 startActivity(intent);
             }
         });
@@ -314,6 +358,9 @@ public class contactActivity extends AppCompatActivity {
 
                                     nameList.add(currentObject.getString("szName"));
                                     JSONObject stIPObject =currentObject.getJSONObject("stIP");
+
+                                    uwIdList.add(currentObject.getInt("uwID"));
+
                                     if(stIPObject.length() > 0)
                                     {
                                         ipList.add(stIPObject.getString("szIP"));
@@ -548,6 +595,15 @@ public class contactActivity extends AppCompatActivity {
                                 intent.putExtra("ipAddress", ipAddress);
                                 intent.putExtra("sessionId", sessionId);
                                 intent.putExtra("acCSRFToken", acCSRFToken);
+                                intent.putExtra("type", "call");
+                                if(connected == 0)
+                                {
+                                    intent.putExtra("connected", "0");
+                                }
+                                else if(connected == 1)
+                                {
+                                    intent.putExtra("connected", "1");
+                                }
 
                                 startActivity(intent);
                             }
@@ -564,5 +620,118 @@ public class contactActivity extends AppCompatActivity {
         });
     }
 
+    void startConference(String ids) throws IOException
+    {
+        OkHttpClient client = new OkHttpClient();
+
+//        Calendar rightNow = Calendar.getInstance();
+
+        MediaType mediaType = MediaType.parse("application/json");
+        RequestBody body = RequestBody.create(mediaType, "{\n\t\"uwID\":65536,\n\t\"szName\"" +
+                ":\"PreConf record 001\",\n\t\"ucConfMode\":0,\n\t\"stStartTime\":{},\n\t" +
+                "\"ucCallType\":254,\n\t\"uwBaudRate\":159,\n\t\"bSupportMultiStream\":254," +
+                "\n\t\"ucAuxStrmRoleLabel\":254,\n\t\"ucMutiPicGroupNum\":0,\n\t\"ucSubPicNum\":0," +
+                "\n\t\"ucMutiPicMode\":0,\n\t\"ucSrtpEncrypt\":2,\n\t\"bMiniMcuCallset\":0,\n\t" +
+                "\"stMcuCallsetInfo\":\n\t{\n\t\t\"ucPreType\":0,\n\t\t\"stPreTime\":\n\t\t{\n\t\t" +
+                "\t\"year\":2019,\n\t\t\t\"month\":6,\n\t\t\t\"day\":21,\n\t\t\t\"hour\":11,\n\t\t\t" +
+                "\"minute\":33,\n\t\t\t\"second\":0\n\t\t},\n\t\t\"uwDuration\":0,\n\t\t" +
+                "\"ucMultiPic\":0,\n\t\t\"ucH235Policy\":0,\n\t\t\"bDataConf\":0,\n\t\t" +
+                "\"ucMLPRate\":0,\n\t\t\"uwIPAnonymousSiteNum\":0,\n\t\t" +
+                "\"uwISDNAnonymousSiteNum\":0,\n\t\t\"uwPSTNAnonymousSiteNum\":0,\n\t\t" +
+                "\"uwSIPAnonymousSiteNum\":0,\n\t\t\"szConfCtrlPassword\":\"\",\n\t\t\"szCardNo\"" +
+                ":\"\",\n\t\t\"szPassword\":\"\",\n\t\t\"ucPaySide\":1,\n\t\t\"ucVideoEncode\":254," +
+                "\n\t\t\"ucVideoFormat\":254,\n\t\t\"ucVideoFrame\":254,\n\t\t\"ucAudioEncode\":254," +
+                "\n\t\t\"ucDuleAudioChn\":254,\n\t\t\"ucLSDRate\":0,\n\t\t" +
+                "\"ucAuxStreamProtocol\":254,\n\t\t\"uwAuxStreamBandWidth\":0,\n\t\t" +
+                "\"ucAuxStreamFormat\":254,\n\t\t\"ucAuxStreamFrame\":254,\n\t\t\"ucIsUseVoiceSwitch" +
+                "\":0,\n\t\t\"ucVoiceSwitchType\":0,\n\t\t\"ucVoiceSwitchLimit\":0},\n\t" +
+                "\"stMiniMcuCallsetInfo\":\n\t{\n\t\t\"bJoinLocalConf\":0,\n\t\t\"ucVideoEncode" +
+                "\":0,\n\t\t\"ucVideoFormat\":0,\n\t\t\"ucAudioEncode\":0,\n\t\t\"ucLSDRate\":0," +
+                "\n\t\t\"ucAuxStreamProtocol\":0,\n\t\t\"ucAuxStreamBandWidth\":0,\n\t\t" +
+                "\"ucAuxStreamFormat\":0\n\t},\n\t\"uwTotalSiteCount\":0,\n\t" +
+                "\"auwSiteID\":" + ids + ",\n\t\"auwGroupID\":[]," +
+                "\n\t\"astTempSiteInfo\":[],\n\t\"ulUseFre\":0,\n\t\"ucIsDirectBroadcast\":0,\n\t" +
+                "\"ucIsRecordPlay\":0,\n\t\"ulSetReportMode\":0,\n\t" +
+                "\"acCSRFToken\":\"" + acCSRFToken + "\"\n}");
+        Request request = new Request.Builder()
+                .url("http://" + ipAddress + "/action.cgi?ActionID=WEB_ScheduleConfAPI")
+                .post(body)
+                .addHeader("userType", "web")
+                .addHeader("Cookie", "SessionID=" + sessionId)
+                .addHeader("Content-Type", "application/json")
+                .addHeader("cache-control", "no-cache")
+                .addHeader("Postman-Token", "883bda72-443b-4fc9-a0c9-1bf94e0984c5")
+                .build();
+
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+
+                System.out.println("Something failed, " + e.toString());
+
+                call.cancel();
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                final String myResponse = response.body().string();
+
+                System.out.println("response from conf start: " + myResponse);
+
+                contactActivity.this.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+
+                        try
+                        {
+                            JSONObject json = new JSONObject(myResponse);
+                            System.out.println(myResponse);
+
+                            int status = json.getInt("success");
+
+                            String toastText = "";
+
+                            if (status == 0)
+                            {
+                                toastText = "Error al tratar de realizar la llamada";
+
+                                Context context = getApplicationContext();
+                                int duration = Toast.LENGTH_SHORT;
+
+                                Toast toast = Toast.makeText(context, toastText, duration);
+                                toast.show();
+                            }
+                            else {
+
+                                toastText = "LLamada exitosa, mirar en el TV";
+
+                                Context context = getApplicationContext();
+                                int duration = Toast.LENGTH_SHORT;
+
+                                Toast toast = Toast.makeText(context, toastText, duration);
+                                toast.show();
+
+                                Intent intent = new Intent(getBaseContext(), callControl.class);
+                                intent.putExtra("user", user);
+                                intent.putExtra("pwd", pwd);
+                                intent.putExtra("ipAddress", ipAddress);
+                                intent.putExtra("sessionId", sessionId);
+                                intent.putExtra("acCSRFToken", acCSRFToken);
+                                intent.putExtra("type", "conference");
+
+                                startActivity(intent);
+                            }
+
+
+                        }
+                        catch (JSONException e)
+                        {
+                            e.printStackTrace();
+                        }
+                    }
+                });
+            }
+        });
+    }
 
 }

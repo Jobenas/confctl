@@ -29,7 +29,7 @@ import okhttp3.Response;
 
 import static java.lang.Integer.parseInt;
 
-public class callControl extends AppCompatActivity {
+public class incomingCallCtrl extends AppCompatActivity {
 
     String user;
     String pwd;
@@ -49,7 +49,7 @@ public class callControl extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_call_control);
+        setContentView(R.layout.activity_incoming_call_ctrl);
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
@@ -58,16 +58,13 @@ public class callControl extends AppCompatActivity {
         ipAddress = getIntent().getStringExtra("ipAddress");
         sessionId = getIntent().getStringExtra("sessionId");
         acCSRFToken = getIntent().getStringExtra("acCSRFToken");
-        callType = getIntent().getStringExtra("type");
         connected = parseInt(getIntent().getStringExtra("connected"));
-
-//        connected = 1;
 
         Button upButton = findViewById(R.id.upButton);
         Button downButton = findViewById(R.id.downButton);
         Button rightButton = findViewById(R.id.rightButton);
         Button leftButton = findViewById(R.id.leftButton);
-        final Button hangUpButton = findViewById(R.id.hangUpbutton);
+        Button backButton = findViewById(R.id.backButton);
 
         upButton.setOnTouchListener(new View.OnTouchListener() {
             @Override
@@ -203,69 +200,28 @@ public class callControl extends AppCompatActivity {
             }
         });
 
-        hangUpButton.setOnClickListener(new View.OnClickListener() {
+        backButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                stopRepeatingTask();
 
-                if(callType.equals("call"))
+                Intent intent = new Intent(getBaseContext(), MainActivity.class);
+                intent.putExtra("user", user);
+                intent.putExtra("pwd", pwd);
+                intent.putExtra("ipAddress", ipAddress);
+                intent.putExtra("sessionId", sessionId);
+                intent.putExtra("acCSRFToken", acCSRFToken);
+                if(connected == 0)
                 {
-                    try {
-                        hangUpCall();
-
-                        stopRepeatingTask();
-
-                        Intent intent = new Intent(getBaseContext(), contactActivity.class);
-                        intent.putExtra("user", user);
-                        intent.putExtra("pwd", pwd);
-                        intent.putExtra("ipAddress", ipAddress);
-                        intent.putExtra("sessionId", sessionId);
-                        intent.putExtra("acCSRFToken", acCSRFToken);
-                        if(connected == 0)
-                        {
-                            intent.putExtra("connected", "0");
-                        }
-                        else if(connected == 1)
-                        {
-                            intent.putExtra("connected", "1");
-                        }
-
-                        startActivity(intent);
-
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
+                    intent.putExtra("connected", "0");
                 }
-                else if(callType.equals("conference"))
+                else if(connected == 1)
                 {
-                    System.out.println("Ending conference");
-
-                    try {
-                        endConference();
-
-                        stopRepeatingTask();
-
-                        Intent intent = new Intent(getBaseContext(), contactActivity.class);
-                        intent.putExtra("user", user);
-                        intent.putExtra("pwd", pwd);
-                        intent.putExtra("ipAddress", ipAddress);
-                        intent.putExtra("sessionId", sessionId);
-                        intent.putExtra("acCSRFToken", acCSRFToken);
-                        if(connected == 0)
-                        {
-                            intent.putExtra("connected", "0");
-                        }
-                        else if(connected == 1)
-                        {
-                            intent.putExtra("connected", "1");
-                        }
-
-                        startActivity(intent);
-
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
+                    intent.putExtra("connected", "1");
                 }
 
+
+                startActivity(intent);
             }
         });
 
@@ -340,7 +296,7 @@ public class callControl extends AppCompatActivity {
 
                 final String myResponse = response.body().string();
 
-                callControl.this.runOnUiThread(new Runnable() {
+                incomingCallCtrl.this.runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
 
@@ -424,7 +380,7 @@ public class callControl extends AppCompatActivity {
 
                 System.out.println("control response: " + myResponse);
 
-                callControl.this.runOnUiThread(new Runnable() {
+                incomingCallCtrl.this.runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
 
@@ -449,169 +405,6 @@ public class callControl extends AppCompatActivity {
                             else {
 
                                 System.out.println(myResponse);
-                            }
-
-
-                        }
-                        catch (JSONException e)
-                        {
-                            e.printStackTrace();
-                        }
-                    }
-                });
-            }
-        });
-    }
-
-    void hangUpCall() throws IOException
-    {
-        OkHttpClient client = new OkHttpClient();
-
-        MediaType mediaType = MediaType.parse("application/json");
-        RequestBody body = RequestBody.create(mediaType, "{\n\t\"ucSiteHandle\":0,\n\t" +
-                "\"acCSRFToken\":\"" + acCSRFToken + "\"\n}");
-        Request request = new Request.Builder()
-                .url("http://" + ipAddress + "/action.cgi?ActionID=WEB_HangupCallAPI")
-                .post(body)
-                .addHeader("userType", "web")
-                .addHeader("Cookie", "SessionID=" + sessionId)
-                .addHeader("Content-Type", "application/json")
-                .addHeader("User-Agent", "PostmanRuntime/7.15.0")
-                .addHeader("Accept", "*/*")
-                .addHeader("Cache-Control", "no-cache")
-                .addHeader("Postman-Token", "e6515c01-926b-4dd2-b6e3-351bb51fc8fb,a73b8377-f41d-47c6-b275-acb340bd3944")
-                .addHeader("Host", ipAddress)
-                .addHeader("accept-encoding", "gzip, deflate")
-                .addHeader("content-length", "71")
-                .addHeader("Connection", "keep-alive")
-                .addHeader("cache-control", "no-cache")
-                .build();
-
-        client.newCall(request).enqueue(new Callback() {
-            @Override
-            public void onFailure(Call call, IOException e) {
-
-                System.out.println("Something failed, " + e.toString());
-
-                call.cancel();
-            }
-
-            @Override
-            public void onResponse(Call call, Response response) throws IOException {
-//                System.out.println("got some response");
-
-                final String myResponse = response.body().string();
-
-                callControl.this.runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-
-                        try
-                        {
-                            JSONObject json = new JSONObject(myResponse);
-
-                            int status = json.getInt("success");
-
-                            String toastText = "";
-
-                            if (status == 0)
-                            {
-                                toastText = "Error al autenticar el dispositivo";
-
-                                Context context = getApplicationContext();
-                                int duration = Toast.LENGTH_SHORT;
-
-                                Toast toast = Toast.makeText(context, toastText, duration);
-                                toast.show();
-                            }
-                            else
-                            {
-//                                System.out.println(myResponse);
-                                toastText = "Desconexión de llamada realizada con éxito";
-
-                                Context context = getApplicationContext();
-                                int duration = Toast.LENGTH_SHORT;
-
-                                Toast toast = Toast.makeText(context, toastText, duration);
-                                toast.show();
-                            }
-
-
-                        }
-                        catch (JSONException e)
-                        {
-                            e.printStackTrace();
-                        }
-                    }
-                });
-            }
-        });
-    }
-
-    void endConference() throws IOException
-    {
-        OkHttpClient client = new OkHttpClient();
-
-        MediaType mediaType = MediaType.parse("application/json");
-        RequestBody body = RequestBody.create(mediaType, "{\n\t\"acCSRFToken\":" +
-                "\"" + acCSRFToken +"\"\n}");
-        Request request = new Request.Builder()
-                .url("http://" + ipAddress + "/action.cgi?ActionID=WEB_EndConfAPI")
-                .post(body)
-                .addHeader("userType", "web")
-                .addHeader("Cookie", "SessionID=" + sessionId)
-                .addHeader("Content-Type", "application/json")
-                .addHeader("cache-control", "no-cache")
-                .addHeader("Postman-Token", "ca94929c-4547-44a9-bda9-e35dc4fc34e5")
-                .build();
-
-        client.newCall(request).enqueue(new Callback() {
-            @Override
-            public void onFailure(Call call, IOException e) {
-
-                System.out.println("Something failed, " + e.toString());
-
-                call.cancel();
-            }
-
-            @Override
-            public void onResponse(Call call, Response response) throws IOException {
-//                System.out.println("got some response");
-
-                final String myResponse = response.body().string();
-
-                callControl.this.runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-
-                        try
-                        {
-                            JSONObject json = new JSONObject(myResponse);
-
-                            int status = json.getInt("success");
-
-                            String toastText = "";
-
-                            if (status == 0)
-                            {
-                                toastText = "Error al autenticar el dispositivo";
-
-                                Context context = getApplicationContext();
-                                int duration = Toast.LENGTH_SHORT;
-
-                                Toast toast = Toast.makeText(context, toastText, duration);
-                                toast.show();
-                            }
-                            else
-                            {
-//                                System.out.println(myResponse);
-                                toastText = "Desconexión de llamada realizada con éxito";
-
-                                Context context = getApplicationContext();
-                                int duration = Toast.LENGTH_SHORT;
-
-                                Toast toast = Toast.makeText(context, toastText, duration);
-                                toast.show();
                             }
 
 

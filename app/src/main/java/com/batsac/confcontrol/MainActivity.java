@@ -1,5 +1,6 @@
 package com.batsac.confcontrol;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -8,11 +9,13 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.Toast;
 
 import org.json.JSONException;
@@ -50,6 +53,8 @@ import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
 
+import static java.lang.Integer.parseInt;
+
 public class MainActivity extends AppCompatActivity {
 
     String user;
@@ -66,6 +71,7 @@ public class MainActivity extends AppCompatActivity {
     private int mInterval = 3000;
     private Handler mHandler;
 
+    @SuppressLint("ClickableViewAccessibility")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -75,7 +81,23 @@ public class MainActivity extends AppCompatActivity {
 
         grabSettings();
 
-        Button onButton = findViewById(R.id.onButton);
+        Intent intent = getIntent();
+
+        Bundle extras = intent.getExtras();
+
+        if (extras != null)
+        {
+            user = getIntent().getStringExtra("user");
+            pwd = getIntent().getStringExtra("pwd");
+            ipAddress = getIntent().getStringExtra("ipAddress");
+            sessionId = getIntent().getStringExtra("sessionId");
+            acCSRFToken = getIntent().getStringExtra("acCSRFToken");
+            connected = parseInt(getIntent().getStringExtra("connected"));
+
+//            connected = 1;
+        }
+
+        final ImageButton onButton = findViewById(R.id.onButton);
         Button presentationButton = findViewById(R.id.presentationButton);
         Button offButton = findViewById(R.id.offButton);
         Button confControlButton = findViewById(R.id.confControlButton);
@@ -86,36 +108,79 @@ public class MainActivity extends AppCompatActivity {
 
         startRepeatingTask();
 
-        onButton.setOnClickListener(new View.OnClickListener() {
+        onButton.setOnTouchListener(new View.OnTouchListener() {
             @Override
-            public void onClick(View view) {
-                if(user.equals("") && pwd.equals("") && ipAddress.equals(""))
+            public boolean onTouch(View view, MotionEvent motionEvent) {
+
+                switch (motionEvent.getAction())
                 {
-                    Context context = getApplicationContext();
-                    CharSequence text = "Dispositivo no Configurado";
-                    int duration = Toast.LENGTH_SHORT;
+                    case MotionEvent.ACTION_DOWN:
+                        onButton.setBackgroundResource(R.drawable.b1p);
+                        return true;
+                    case MotionEvent.ACTION_UP:
+                        onButton.setBackgroundResource(R.drawable.b1);
+                        if(user.equals("") && pwd.equals("") && ipAddress.equals(""))
+                        {
+                            Context context = getApplicationContext();
+                            CharSequence text = "Dispositivo no Configurado";
+                            int duration = Toast.LENGTH_SHORT;
 
-                    Toast toast = Toast.makeText(context, text, duration);
-                    toast.show();
+                            Toast toast = Toast.makeText(context, text, duration);
+                            toast.show();
+                        }
+                        else
+                        {
+
+                            try {
+                                connectToVC();
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
+
+                            Context context = getApplicationContext();
+                            CharSequence text = "Dispositivo Encendido";
+                            int duration = Toast.LENGTH_SHORT;
+
+                            Toast toast = Toast.makeText(context, text, duration);
+                            toast.show();
+                        }
+                        return true;
                 }
-                else
-                {
 
-                    try {
-                        connectToVC();
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-
-                    Context context = getApplicationContext();
-                    CharSequence text = "Dispositivo Encendido";
-                    int duration = Toast.LENGTH_SHORT;
-
-                    Toast toast = Toast.makeText(context, text, duration);
-                    toast.show();
-                }
+                return false;
             }
         });
+
+//        onButton.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                if(user.equals("") && pwd.equals("") && ipAddress.equals(""))
+//                {
+//                    Context context = getApplicationContext();
+//                    CharSequence text = "Dispositivo no Configurado";
+//                    int duration = Toast.LENGTH_SHORT;
+//
+//                    Toast toast = Toast.makeText(context, text, duration);
+//                    toast.show();
+//                }
+//                else
+//                {
+//
+//                    try {
+//                        connectToVC();
+//                    } catch (IOException e) {
+//                        e.printStackTrace();
+//                    }
+//
+//                    Context context = getApplicationContext();
+//                    CharSequence text = "Dispositivo Encendido";
+//                    int duration = Toast.LENGTH_SHORT;
+//
+//                    Toast toast = Toast.makeText(context, text, duration);
+//                    toast.show();
+//                }
+//            }
+//        });
 
         presentationButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -146,8 +211,10 @@ public class MainActivity extends AppCompatActivity {
         offButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                stopRepeatingTask();
                 if(connected > 0)
                 {
+                    connected = 0;
                     try
                     {
                         startTermSleep();
@@ -179,6 +246,14 @@ public class MainActivity extends AppCompatActivity {
                     intent.putExtra("ipAddress", ipAddress);
                     intent.putExtra("sessionId", sessionId);
                     intent.putExtra("acCSRFToken", acCSRFToken);
+                    if(connected == 0)
+                    {
+                        intent.putExtra("connected", "0");
+                    }
+                    else if(connected == 1)
+                    {
+                        intent.putExtra("connected", "1");
+                    }
 
                     startActivity(intent);
                 }
@@ -197,10 +272,33 @@ public class MainActivity extends AppCompatActivity {
         acceptCallButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                try {
-                    incomingCallProc(1);
-                } catch (IOException e) {
-                    e.printStackTrace();
+
+                if(connected > 0)
+                {
+                    try {
+                        incomingCallProc(1);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+                else
+                {
+                    Intent intent = new Intent(getBaseContext(), incomingCallCtrl.class);
+                    intent.putExtra("user", user);
+                    intent.putExtra("pwd", pwd);
+                    intent.putExtra("ipAddress", ipAddress);
+                    intent.putExtra("sessionId", sessionId);
+                    intent.putExtra("acCSRFToken", acCSRFToken);
+                    if(connected == 0)
+                    {
+                        intent.putExtra("connected", "0");
+                    }
+                    else if(connected == 1)
+                    {
+                        intent.putExtra("connected", "1");
+                    }
+
+                    startActivity(intent);
                 }
             }
         });
@@ -381,6 +479,7 @@ public class MainActivity extends AppCompatActivity {
                 System.out.println("got some response");
 
                 final String myResponse = response.body().string();
+                final List<String> responseCookies = response.headers("Set-Cookie");
 
                 MainActivity.this.runOnUiThread(new Runnable() {
                     @Override
@@ -412,6 +511,12 @@ public class MainActivity extends AppCompatActivity {
                                 JSONObject dataJson = new JSONObject(dataString);
 
                                 sessionId = dataJson.getString("acSessionId");
+                                if (sessionId.equals(""))
+                                {
+                                    String cookieLongText = responseCookies.get(0);
+                                    String[] stringSplit = cookieLongText.split(";");
+                                    sessionId = stringSplit[0].split("=")[1];
+                                }
 
                                 System.out.println("Session ID: " + sessionId);
                             }
@@ -485,6 +590,8 @@ public class MainActivity extends AppCompatActivity {
                 System.out.println("got some response");
 
                 final String myResponse = response.body().string();
+
+                System.out.print(myResponse);
 
                 MainActivity.this.runOnUiThread(new Runnable() {
                     @Override
@@ -782,7 +889,7 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    void incomingCallProc(int action) throws IOException
+    void incomingCallProc(final int action) throws IOException
     {
         OkHttpClient client = new OkHttpClient();
 
@@ -843,6 +950,30 @@ public class MainActivity extends AppCompatActivity {
 
                                 Toast toast = Toast.makeText(context, toastText, duration);
                                 toast.show();
+                            }
+                            else
+                            {
+
+                                if(action == 1)
+                                {
+                                    Intent intent = new Intent(getBaseContext(), incomingCallCtrl.class);
+                                    intent.putExtra("user", user);
+                                    intent.putExtra("pwd", pwd);
+                                    intent.putExtra("ipAddress", ipAddress);
+                                    intent.putExtra("sessionId", sessionId);
+                                    intent.putExtra("acCSRFToken", acCSRFToken);
+                                    if(connected == 0)
+                                    {
+                                        intent.putExtra("connected", "0");
+                                    }
+                                    else if(connected == 1)
+                                    {
+                                        intent.putExtra("connected", "1");
+                                    }
+
+                                    startActivity(intent);
+                                }
+
                             }
                         }
                         catch (JSONException e)
@@ -997,8 +1128,6 @@ public class MainActivity extends AppCompatActivity {
                             else
                             {
 //                                System.out.println(myResponse);
-                                connected = 0;
-                                stopRepeatingTask();
                                 toastText = "Desconexión al equipo completa";
 
                                 Context context = getApplicationContext();
