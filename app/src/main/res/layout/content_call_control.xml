@@ -2,81 +2,83 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
+    android:orientation="horizontal"
     android:padding="16dp"
-    android:layout_marginTop="75dp">
+    android:background="@android:color/black"
+    android:gravity="center">
 
     <LinearLayout
-        android:layout_width="match_parent"
-        android:gravity="center"
-        android:layout_height="wrap_content">
-
-        <Button
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:id="@+id/upButton"
-            android:layout_marginTop="15dp"
-            android:gravity="center"
-            android:text="↑"
-            android:textSize="24sp"/>
-
-
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:gravity="center"
-        android:layout_height="wrap_content">
-
-        <Button
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:id="@+id/leftButton"
-            android:layout_marginTop="3dp"
-            android:layout_marginRight="15dp"
-            android:gravity="center"
-            android:text="←"
-            android:textSize="24sp"/>
-
-        <Button
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:id="@+id/rightButton"
-            android:layout_marginTop="3dp"
-            android:layout_marginLeft="15dp"
-            android:gravity="center"
-            android:text="→"
-            android:textSize="24sp"/>
-
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:gravity="center"
-        android:layout_height="wrap_content">
-
-        <Button
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:id="@+id/downButton"
-            android:layout_marginTop="3dp"
-            android:gravity="center"
-            android:text="↓"
-            android:textSize="24sp"/>
-        <!--android:layout_marginLeft="140dp"-->
-
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:gravity="center">
-            <Button
-                android:id="@+id/hangUpbutton"
+        android:orientation="vertical"
+        android:layout_marginRight="20dp"
+        android:layout_marginEnd="20dp">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:gravity="center"
+            android:layout_height="wrap_content">
+
+            <ImageButton
+                android:id="@+id/upButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
-                android:text="@string/hang_up_button_string"/>
+                android:src="@drawable/b10"
+                android:background="@android:color/black"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:gravity="center"
+            android:layout_height="wrap_content">
+
+            <ImageButton
+                android:id="@+id/leftButton"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_marginTop="3dp"
+                android:src="@drawable/b13"
+                android:background="@android:color/black"/>
+
+            <ImageButton
+                android:id="@+id/rightButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="3dp"
+                android:background="@android:color/black"
+                android:gravity="center"
+                android:src="@drawable/b11" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:gravity="center"
+            android:layout_height="wrap_content">
+
+            <ImageButton
+                android:id="@+id/downButton"
+                android:layout_width="wrap_content"
+                android:layout_height="177dp"
+                android:layout_marginTop="3dp"
+                android:background="@android:color/black"
+                android:gravity="center"
+                android:src="@drawable/b12" />
+        </LinearLayout>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="20dp"
+        android:layout_marginStart="20dp"
+        android:gravity="center">
+
+        <ImageButton
+            android:id="@+id/hangUpbutton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@android:color/black"
+            android:src="@drawable/b15" />
     </LinearLayout>
 
 </LinearLayout>

@@ -4,7 +4,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:padding="16dp"
-    android:layout_marginTop="75dp">
+    android:background="@android:color/black">
 
     <TextView
         android:id="@+id/contact_form_title"
@@ -16,39 +16,45 @@
         android:text="Config. General"
         android:gravity="center"
         android:textSize="40sp"
-        android:typeface="serif" />
+        android:typeface="serif"
+        android:textColor="@android:color/white"/>
 
 
     <LinearLayout
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal">
+        android:orientation="horizontal"
+        android:layout_marginTop="20dp">
 
         <EditText
             android:layout_width="253dp"
             android:layout_height="wrap_content"
             android:id="@+id/userEdit"
             android:hint="Por favor ingrese el Usuario"
-            android:inputType="text" />
+            android:inputType="text"
+            android:background="@android:color/white"/>
     </LinearLayout>
 
     <LinearLayout
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal">
+        android:orientation="horizontal"
+        android:layout_marginTop="20dp">
 
         <EditText
             android:layout_width="253dp"
             android:layout_height="wrap_content"
             android:id="@+id/pwdEdit"
             android:hint="Por favor ingrese la Clave"
-            android:inputType="textPassword" />
+            android:inputType="textPassword"
+            android:background="@android:color/white"/>
     </LinearLayout>
 
     <LinearLayout
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal">
+        android:orientation="horizontal"
+        android:layout_marginTop="20dp">
 
         <EditText
             android:layout_width="261dp"
@@ -56,14 +62,16 @@
             android:autofillHints="192.168.0.50"
             android:id="@+id/ipEdittext"
             android:hint="Por favor ingrese la IP"
-            android:inputType="phone" />
+            android:inputType="phone"
+            android:background="@android:color/white"/>
     </LinearLayout>
 
     <LinearLayout
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:orientation="horizontal">
+        android:orientation="horizontal"
+        android:layout_marginTop="20dp">
 
         <Button
             android:layout_width="wrap_content"

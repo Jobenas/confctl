@@ -3,16 +3,19 @@ package com.batsac.confcontrol;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
+import android.widget.ImageButton;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
@@ -63,6 +66,7 @@ public class contactActivity extends AppCompatActivity {
 
     Set<Integer> indexes = new HashSet<Integer>();
 
+    @SuppressLint("ClickableViewAccessibility")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -86,82 +90,109 @@ public class contactActivity extends AppCompatActivity {
         mHandler = new Handler();
         startRepeatingTask();
 
-        Button startCallButton = findViewById(R.id.startCallButton);
-        Button returnContactButton = findViewById(R.id.returnContactButton);
+        final ImageButton startCallButton = findViewById(R.id.startCallButton);
+        final ImageButton returnContactButton = findViewById(R.id.returnContactButton);
 
-        startCallButton.setOnClickListener(new View.OnClickListener() {
+        startCallButton.setOnTouchListener(new View.OnTouchListener() {
             @Override
-            public void onClick(View view) {
-                System.out.println("Number of checked devices: " + indexes.size());
-                if(indexes.size() == 1)
+            public boolean onTouch(View view, MotionEvent motionEvent) {
+                switch(motionEvent.getAction())
                 {
-                    Integer[] indexArray = new Integer[indexes.size()];
+                    case MotionEvent.ACTION_DOWN:
 
-                    indexes.toArray(indexArray);
+                        startCallButton.setBackgroundResource(R.drawable.b9p);
+                        return true;
+                    case MotionEvent.ACTION_UP:
+                        startCallButton.setBackgroundResource(R.drawable.b9);
 
-                    callIp = ipList.get(indexArray[0]);
-                    String callType = typeList.get(indexArray[0]);
-
-                    System.out.println("current IP selected: " + callIp);
-
-                    try {
-                        callP2P(callIp, callType);
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                }
-                else if(indexes.size() > 1)
-                {
-                    Integer[] indexArray = new Integer[indexes.size()];
-
-                    indexes.toArray(indexArray);
-
-                    StringBuilder idList = new StringBuilder("[");
-
-                    for(int i=0; i < indexes.size(); i++)
-                    {
-                        if(i == indexes.size() - 1)
+                        System.out.println("Number of checked devices: " + indexes.size());
+                        if(indexes.size() == 1)
                         {
-                            idList.append(uwIdList.get(indexArray[i]).toString());
-                        }
-                        else
-                        {
-                            idList.append(uwIdList.get(indexArray[i]).toString()).append(",");
-                        }
-                    }
-                    idList.append("]");
+                            Integer[] indexArray = new Integer[indexes.size()];
 
-                    try {
-                        startConference(idList.toString());
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
+                            indexes.toArray(indexArray);
+
+                            callIp = ipList.get(indexArray[0]);
+                            String callType = typeList.get(indexArray[0]);
+
+                            System.out.println("current IP selected: " + callIp);
+
+                            try {
+                                callP2P(callIp, callType);
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                        else if(indexes.size() > 1)
+                        {
+                            Integer[] indexArray = new Integer[indexes.size()];
+
+                            indexes.toArray(indexArray);
+
+                            StringBuilder idList = new StringBuilder("[");
+
+                            for(int i=0; i < indexes.size(); i++)
+                            {
+                                if(i == indexes.size() - 1)
+                                {
+                                    idList.append(uwIdList.get(indexArray[i]).toString());
+                                }
+                                else
+                                {
+                                    idList.append(uwIdList.get(indexArray[i]).toString()).append(",");
+                                }
+                            }
+                            idList.append("]");
+
+                            try {
+                                startConference(idList.toString());
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
+                        }
+
+                        return true;
                 }
+
+                return false;
             }
         });
 
-        returnContactButton.setOnClickListener(new View.OnClickListener() {
+        returnContactButton.setOnTouchListener(new View.OnTouchListener() {
             @Override
-            public void onClick(View view) {
-                stopRepeatingTask();
-
-                Intent intent = new Intent(getBaseContext(), MainActivity.class);
-
-                intent.putExtra("user", user);
-                intent.putExtra("pwd", pwd);
-                intent.putExtra("ipAddress", ipAddress);
-                intent.putExtra("sessionId", sessionId);
-                intent.putExtra("acCSRFToken", acCSRFToken);
-                if(connected == 0)
+            public boolean onTouch(View view, MotionEvent motionEvent) {
+                switch (motionEvent.getAction())
                 {
-                    intent.putExtra("connected", "0");
-                }
-                else if(connected == 1)
-                {
-                    intent.putExtra("connected", "1");
+                    case MotionEvent.ACTION_DOWN:
+                        returnContactButton.setBackgroundResource(R.drawable.b14p);
+                        return true;
+                    case MotionEvent.ACTION_UP:
+                        returnContactButton.setBackgroundResource(R.drawable.b14);
+
+                        stopRepeatingTask();
+
+                        Intent intent = new Intent(getBaseContext(), MainActivity.class);
+
+                        intent.putExtra("user", user);
+                        intent.putExtra("pwd", pwd);
+                        intent.putExtra("ipAddress", ipAddress);
+                        intent.putExtra("sessionId", sessionId);
+                        intent.putExtra("acCSRFToken", acCSRFToken);
+                        if(connected == 0)
+                        {
+                            intent.putExtra("connected", "0");
+                        }
+                        else if(connected == 1)
+                        {
+                            intent.putExtra("connected", "1");
+                        }
+
+                        startActivity(intent);
+
+                        return true;
                 }
 
-                startActivity(intent);
+                return false;
             }
         });
     }
@@ -378,7 +409,7 @@ public class contactActivity extends AppCompatActivity {
                                 String addressBookText = "";
 
                                 TableLayout siteTable = (TableLayout)findViewById(R.id.siteTable);
-                                siteTable.setStretchAllColumns(true);
+//                                siteTable.setStretchAllColumns(true);
                                 siteTable.bringToFront();
 
                                 for (int i = 0; i < astSites.length(); i++)
@@ -387,12 +418,17 @@ public class contactActivity extends AppCompatActivity {
                                     TableRow tr = new TableRow(contactActivity.this);
                                     TextView c1 = new TextView(contactActivity.this);
                                     c1.setText(nameList.get(i));
-                                    TextView c2 = new TextView(contactActivity.this);
-                                    c2.setText(ipList.get(i));
-                                    TextView c3 = new TextView(contactActivity.this);
-                                    c3.setText(typeList.get(i));
+                                    c1.setTextColor(Color.WHITE);
+//                                    TextView c2 = new TextView(contactActivity.this);
+//                                    c2.setText(ipList.get(i));
+//                                    c2.setTextColor(Color.WHITE);
+//                                    TextView c3 = new TextView(contactActivity.this);
+//                                    c3.setText(typeList.get(i));
+//                                    c3.setTextColor(Color.WHITE);
                                     CheckBox c4 = new CheckBox(contactActivity.this);
                                     c4.setId(i);
+                                    c4.setBackgroundColor(Color.WHITE);
+                                    c4.setHighlightColor(Color.WHITE);
 
                                     final int currentId = i;
 
@@ -411,8 +447,8 @@ public class contactActivity extends AppCompatActivity {
                                     });
 
                                     tr.addView(c1);
-                                    tr.addView(c2);
-                                    tr.addView(c3);
+//                                    tr.addView(c2);
+//                                    tr.addView(c3);
                                     tr.addView(c4);
                                     siteTable.addView(tr);
                                 }
@@ -424,8 +460,8 @@ public class contactActivity extends AppCompatActivity {
                                 Context context = getApplicationContext();
                                 int duration = Toast.LENGTH_SHORT;
 
-                                Toast toast = Toast.makeText(context, addressBookText, duration);
-                                toast.show();
+//                                Toast toast = Toast.makeText(context, addressBookText, duration);
+//                                toast.show();
                             }
 
 

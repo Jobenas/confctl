@@ -12,6 +12,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.Toast;
 
 import org.json.JSONException;
@@ -63,11 +64,11 @@ public class callControl extends AppCompatActivity {
 
 //        connected = 1;
 
-        Button upButton = findViewById(R.id.upButton);
-        Button downButton = findViewById(R.id.downButton);
-        Button rightButton = findViewById(R.id.rightButton);
-        Button leftButton = findViewById(R.id.leftButton);
-        final Button hangUpButton = findViewById(R.id.hangUpbutton);
+        final ImageButton upButton = findViewById(R.id.upButton);
+        final ImageButton downButton = findViewById(R.id.downButton);
+        final ImageButton rightButton = findViewById(R.id.rightButton);
+        final ImageButton leftButton = findViewById(R.id.leftButton);
+        final ImageButton hangUpButton = findViewById(R.id.hangUpbutton);
 
         upButton.setOnTouchListener(new View.OnTouchListener() {
             @Override
@@ -76,6 +77,9 @@ public class callControl extends AppCompatActivity {
                 switch (motionEvent.getAction())
                 {
                     case MotionEvent.ACTION_DOWN:
+
+                        upButton.setBackgroundResource(R.drawable.b10p);
+
                         if (connected == 1)
                         {
                             try
@@ -88,6 +92,7 @@ public class callControl extends AppCompatActivity {
                         }
                         return true;
                     case MotionEvent.ACTION_UP:
+                        upButton.setBackgroundResource(R.drawable.b10);
                         if (connected == 1)
                         {
                             try
@@ -110,6 +115,7 @@ public class callControl extends AppCompatActivity {
                 switch (motionEvent.getAction())
                 {
                     case MotionEvent.ACTION_DOWN:
+                        leftButton.setBackgroundResource(R.drawable.b13p);
                         if (connected == 1)
                         {
                             try
@@ -121,6 +127,7 @@ public class callControl extends AppCompatActivity {
                         }
                         return true;
                     case MotionEvent.ACTION_UP:
+                        leftButton.setBackgroundResource(R.drawable.b13p);
                         if (connected == 1)
                         {
                             try
@@ -143,7 +150,7 @@ public class callControl extends AppCompatActivity {
                 switch (motionEvent.getAction())
                 {
                     case MotionEvent.ACTION_DOWN:
-
+                        rightButton.setBackgroundResource(R.drawable.b11p);
                         if (connected == 1)
                         {
                             try
@@ -155,6 +162,7 @@ public class callControl extends AppCompatActivity {
                         }
                         return true;
                     case MotionEvent.ACTION_UP:
+                        rightButton.setBackgroundResource(R.drawable.b11);
                         if (connected == 1)
                         {
                             try
@@ -177,6 +185,7 @@ public class callControl extends AppCompatActivity {
                 switch (motionEvent.getAction())
                 {
                     case MotionEvent.ACTION_DOWN:
+                        downButton.setBackgroundResource(R.drawable.b12p);
                         if (connected == 1)
                         {
                             try
@@ -188,6 +197,7 @@ public class callControl extends AppCompatActivity {
                         }
                         return true;
                     case MotionEvent.ACTION_UP:
+                        downButton.setBackgroundResource(R.drawable.b12);
                         if (connected == 1)
                         {
                             try
@@ -203,71 +213,150 @@ public class callControl extends AppCompatActivity {
             }
         });
 
-        hangUpButton.setOnClickListener(new View.OnClickListener() {
+        hangUpButton.setOnTouchListener(new View.OnTouchListener() {
             @Override
-            public void onClick(View view) {
+            public boolean onTouch(View view, MotionEvent motionEvent) {
 
-                if(callType.equals("call"))
+                switch (motionEvent.getAction())
                 {
-                    try {
-                        hangUpCall();
+                    case MotionEvent.ACTION_DOWN:
+                        hangUpButton.setBackgroundResource(R.drawable.b15p);
 
-                        stopRepeatingTask();
+                        return true;
+                    case MotionEvent.ACTION_UP:
+                        hangUpButton.setBackgroundResource(R.drawable.b15);
 
-                        Intent intent = new Intent(getBaseContext(), contactActivity.class);
-                        intent.putExtra("user", user);
-                        intent.putExtra("pwd", pwd);
-                        intent.putExtra("ipAddress", ipAddress);
-                        intent.putExtra("sessionId", sessionId);
-                        intent.putExtra("acCSRFToken", acCSRFToken);
-                        if(connected == 0)
+                        if(callType.equals("call"))
                         {
-                            intent.putExtra("connected", "0");
+                            try {
+                                hangUpCall();
+
+                                stopRepeatingTask();
+
+                                Intent intent = new Intent(getBaseContext(), contactActivity.class);
+                                intent.putExtra("user", user);
+                                intent.putExtra("pwd", pwd);
+                                intent.putExtra("ipAddress", ipAddress);
+                                intent.putExtra("sessionId", sessionId);
+                                intent.putExtra("acCSRFToken", acCSRFToken);
+                                if(connected == 0)
+                                {
+                                    intent.putExtra("connected", "0");
+                                }
+                                else if(connected == 1)
+                                {
+                                    intent.putExtra("connected", "1");
+                                }
+
+                                startActivity(intent);
+
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
                         }
-                        else if(connected == 1)
+                        else if(callType.equals("conference"))
                         {
-                            intent.putExtra("connected", "1");
+                            System.out.println("Ending conference");
+
+                            try {
+                                endConference();
+
+                                stopRepeatingTask();
+
+                                Intent intent = new Intent(getBaseContext(), contactActivity.class);
+                                intent.putExtra("user", user);
+                                intent.putExtra("pwd", pwd);
+                                intent.putExtra("ipAddress", ipAddress);
+                                intent.putExtra("sessionId", sessionId);
+                                intent.putExtra("acCSRFToken", acCSRFToken);
+                                if(connected == 0)
+                                {
+                                    intent.putExtra("connected", "0");
+                                }
+                                else if(connected == 1)
+                                {
+                                    intent.putExtra("connected", "1");
+                                }
+
+                                startActivity(intent);
+
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
                         }
 
-                        startActivity(intent);
-
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
+                        return true;
                 }
-                else if(callType.equals("conference"))
-                {
-                    System.out.println("Ending conference");
 
-                    try {
-                        endConference();
-
-                        stopRepeatingTask();
-
-                        Intent intent = new Intent(getBaseContext(), contactActivity.class);
-                        intent.putExtra("user", user);
-                        intent.putExtra("pwd", pwd);
-                        intent.putExtra("ipAddress", ipAddress);
-                        intent.putExtra("sessionId", sessionId);
-                        intent.putExtra("acCSRFToken", acCSRFToken);
-                        if(connected == 0)
-                        {
-                            intent.putExtra("connected", "0");
-                        }
-                        else if(connected == 1)
-                        {
-                            intent.putExtra("connected", "1");
-                        }
-
-                        startActivity(intent);
-
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                }
-
+                return false;
             }
         });
+
+//        hangUpButton.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//
+//                if(callType.equals("call"))
+//                {
+//                    try {
+//                        hangUpCall();
+//
+//                        stopRepeatingTask();
+//
+//                        Intent intent = new Intent(getBaseContext(), contactActivity.class);
+//                        intent.putExtra("user", user);
+//                        intent.putExtra("pwd", pwd);
+//                        intent.putExtra("ipAddress", ipAddress);
+//                        intent.putExtra("sessionId", sessionId);
+//                        intent.putExtra("acCSRFToken", acCSRFToken);
+//                        if(connected == 0)
+//                        {
+//                            intent.putExtra("connected", "0");
+//                        }
+//                        else if(connected == 1)
+//                        {
+//                            intent.putExtra("connected", "1");
+//                        }
+//
+//                        startActivity(intent);
+//
+//                    } catch (IOException e) {
+//                        e.printStackTrace();
+//                    }
+//                }
+//                else if(callType.equals("conference"))
+//                {
+//                    System.out.println("Ending conference");
+//
+//                    try {
+//                        endConference();
+//
+//                        stopRepeatingTask();
+//
+//                        Intent intent = new Intent(getBaseContext(), contactActivity.class);
+//                        intent.putExtra("user", user);
+//                        intent.putExtra("pwd", pwd);
+//                        intent.putExtra("ipAddress", ipAddress);
+//                        intent.putExtra("sessionId", sessionId);
+//                        intent.putExtra("acCSRFToken", acCSRFToken);
+//                        if(connected == 0)
+//                        {
+//                            intent.putExtra("connected", "0");
+//                        }
+//                        else if(connected == 1)
+//                        {
+//                            intent.putExtra("connected", "1");
+//                        }
+//
+//                        startActivity(intent);
+//
+//                    } catch (IOException e) {
+//                        e.printStackTrace();
+//                    }
+//                }
+//
+//            }
+//        });
 
         mHandler = new Handler();
         startRepeatingTask();

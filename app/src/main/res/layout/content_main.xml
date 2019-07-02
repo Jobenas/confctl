@@ -11,7 +11,7 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="80dp"
+        android:layout_marginBottom="10dp"
         android:orientation="horizontal"
         android:gravity="center">
 
@@ -21,67 +21,72 @@
             android:layout_height="wrap_content"
             android:layout_marginEnd="20dp"
             android:layout_marginRight="20dp"
-            android:src="@drawable/b1"
-            android:background="@android:color/black"/>
+            android:background="@android:color/black"
+            android:src="@drawable/b1" />
 
-        <Button
+        <ImageButton
             android:id="@+id/presentationButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/presentation_string"/>
+            android:src="@drawable/b5"
+            android:background="@android:color/black"/>
 
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="40dp"
-        android:orientation="horizontal"
-        android:gravity="center">
-
-        <Button
-            android:id="@+id/offButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginRight="20dp"
-            android:layout_marginEnd="20dp"
-            android:baselineAligned="false"
-            android:text="@string/off_string" />
-
-        <Button
-            android:id="@+id/confControlButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="20dp"
-            android:layout_marginStart="20dp"
-            android:text="@string/conference_control_string"
-            />
-
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="20dp"
-        android:orientation="horizontal"
-        android:gravity="center">
-
-        <Button
+        <ImageButton
             android:id="@+id/acceptCallButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginRight="20dp"
-            android:layout_marginEnd="20dp"
-            android:text="@string/accept_call_string"/>
+            android:layout_marginStart="20dp"
+            android:layout_marginLeft="20dp"
+            android:src="@drawable/b3"
+            android:background="@android:color/black"/>
 
-        <Button
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="10dp"
+        android:orientation="horizontal"
+        android:gravity="center">
+
+        <ImageButton
+            android:id="@+id/offButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="20dp"
+            android:layout_marginRight="20dp"
+            android:src="@drawable/b2"
+            android:background="@android:color/black"/>
+
+        <ImageButton
+            android:id="@+id/confControlButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/b6"
+            android:background="@android:color/black"/>
+
+        <ImageButton
             android:id="@+id/declineCallButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="20dp"
+            android:src="@drawable/b4"
             android:layout_marginStart="20dp"
-            android:text="@string/decline_call_string"/>
+            android:layout_marginLeft="20dp"
+            android:background="@android:color/black"/>
 
     </LinearLayout>
+
+    <!--<LinearLayout-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:layout_marginBottom="10dp"-->
+        <!--android:orientation="horizontal"-->
+        <!--android:gravity="center">-->
+
+
+
+
+
+    <!--</LinearLayout>-->
 
 </LinearLayout>

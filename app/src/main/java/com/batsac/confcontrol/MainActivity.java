@@ -3,6 +3,7 @@ package com.batsac.confcontrol;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
+import android.media.Image;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.design.widget.FloatingActionButton;
@@ -98,11 +99,11 @@ public class MainActivity extends AppCompatActivity {
         }
 
         final ImageButton onButton = findViewById(R.id.onButton);
-        Button presentationButton = findViewById(R.id.presentationButton);
-        Button offButton = findViewById(R.id.offButton);
-        Button confControlButton = findViewById(R.id.confControlButton);
-        Button acceptCallButton = findViewById(R.id.acceptCallButton);
-        Button declineCallButton = findViewById(R.id.declineCallButton);
+        final ImageButton presentationButton = findViewById(R.id.presentationButton);
+        final ImageButton offButton = findViewById(R.id.offButton);
+        final ImageButton confControlButton = findViewById(R.id.confControlButton);
+        final ImageButton acceptCallButton = findViewById(R.id.acceptCallButton);
+        final ImageButton declineCallButton = findViewById(R.id.declineCallButton);
 
         mHandler = new Handler();
 
@@ -151,168 +152,200 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-//        onButton.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                if(user.equals("") && pwd.equals("") && ipAddress.equals(""))
-//                {
-//                    Context context = getApplicationContext();
-//                    CharSequence text = "Dispositivo no Configurado";
-//                    int duration = Toast.LENGTH_SHORT;
-//
-//                    Toast toast = Toast.makeText(context, text, duration);
-//                    toast.show();
-//                }
-//                else
-//                {
-//
-//                    try {
-//                        connectToVC();
-//                    } catch (IOException e) {
-//                        e.printStackTrace();
-//                    }
-//
-//                    Context context = getApplicationContext();
-//                    CharSequence text = "Dispositivo Encendido";
-//                    int duration = Toast.LENGTH_SHORT;
-//
-//                    Toast toast = Toast.makeText(context, text, duration);
-//                    toast.show();
-//                }
-//            }
-//        });
-
-        presentationButton.setOnClickListener(new View.OnClickListener() {
+        presentationButton.setOnTouchListener(new View.OnTouchListener() {
             @Override
-            public void onClick(View view) {
+            public boolean onTouch(View view, MotionEvent motionEvent) {
 
-                if(connected > 0)
+                switch (motionEvent.getAction())
                 {
-                    try {
-                        emulateRemote(0, 8);
-                        emulateRemote(2, 8);
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                }
-                else
-                {
-                    Context context = getApplicationContext();
-                    CharSequence text = "Requiere conectarse al dispositivo primero";
-                    int duration = Toast.LENGTH_SHORT;
+                    case MotionEvent.ACTION_DOWN:
+                        presentationButton.setBackgroundResource(R.drawable.b5p);
+                        return true;
+                    case MotionEvent.ACTION_UP:
+                        presentationButton.setBackgroundResource(R.drawable.b5);
 
-                    Toast toast = Toast.makeText(context, text, duration);
-                    toast.show();
+                        if(connected > 0)
+                        {
+                            try {
+                                emulateRemote(0, 8);
+                                emulateRemote(2, 8);
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                        else
+                        {
+                            Context context = getApplicationContext();
+                            CharSequence text = "Requiere conectarse al dispositivo primero";
+                            int duration = Toast.LENGTH_SHORT;
+
+                            Toast toast = Toast.makeText(context, text, duration);
+                            toast.show();
+                        }
+                        return true;
                 }
 
+                return false;
             }
         });
 
-        offButton.setOnClickListener(new View.OnClickListener() {
+        offButton.setOnTouchListener(new View.OnTouchListener() {
             @Override
-            public void onClick(View view) {
-                stopRepeatingTask();
-                if(connected > 0)
-                {
-                    connected = 0;
-                    try
-                    {
-                        startTermSleep();
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                }
-                else
-                {
-                    Context context = getApplicationContext();
-                    CharSequence text = "Requiere conectarse al dispositivo primero";
-                    int duration = Toast.LENGTH_SHORT;
+            public boolean onTouch(View view, MotionEvent motionEvent) {
 
-                    Toast toast = Toast.makeText(context, text, duration);
-                    toast.show();
+                switch (motionEvent.getAction())
+                {
+                    case MotionEvent.ACTION_DOWN:
+                        offButton.setBackgroundResource(R.drawable.b2p);
+                        return true;
+                    case MotionEvent.ACTION_UP:
+                        offButton.setBackgroundResource(R.drawable.b2);
+                        stopRepeatingTask();
+                        if(connected > 0)
+                        {
+                            connected = 0;
+                            try
+                            {
+                                startTermSleep();
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                        else
+                        {
+                            Context context = getApplicationContext();
+                            CharSequence text = "Requiere conectarse al dispositivo primero";
+                            int duration = Toast.LENGTH_SHORT;
+
+                            Toast toast = Toast.makeText(context, text, duration);
+                            toast.show();
+                        }
+                        return true;
                 }
+
+                return false;
+            }
+        });
+
+        confControlButton.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View view, MotionEvent motionEvent) {
+                switch (motionEvent.getAction())
+                {
+                    case MotionEvent.ACTION_DOWN:
+                        confControlButton.setBackgroundResource(R.drawable.b6p);
+                        return true;
+                    case MotionEvent.ACTION_UP:
+                        confControlButton.setBackgroundResource(R.drawable.b6);
+
+                        if(connected > 0)
+                        {
+                            Intent intent = new Intent(getBaseContext(), contactActivity.class);
+                            intent.putExtra("user", user);
+                            intent.putExtra("pwd", pwd);
+                            intent.putExtra("ipAddress", ipAddress);
+                            intent.putExtra("sessionId", sessionId);
+                            intent.putExtra("acCSRFToken", acCSRFToken);
+                            if(connected == 0)
+                            {
+                                intent.putExtra("connected", "0");
+                            }
+                            else if(connected == 1)
+                            {
+                                intent.putExtra("connected", "1");
+                            }
+
+                            startActivity(intent);
+                        }
+                        else
+                        {
+                            Context context = getApplicationContext();
+                            CharSequence text = "Requiere conectarse al dispositivo primero";
+                            int duration = Toast.LENGTH_SHORT;
+
+                            Toast toast = Toast.makeText(context, text, duration);
+                            toast.show();
+                        }
+
+                        return true;
+                }
+                return false;
+            }
+        });
+
+        acceptCallButton.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View view, MotionEvent motionEvent) {
+                switch (motionEvent.getAction())
+                {
+                    case MotionEvent.ACTION_DOWN:
+                        acceptCallButton.setBackgroundResource(R.drawable.b3p);
+                        return true;
+                    case MotionEvent.ACTION_UP:
+                        acceptCallButton.setBackgroundResource(R.drawable.b3);
+
+                        if(connected > 0)
+                        {
+                            try {
+                                incomingCallProc(1);
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                        else
+                        {
+                            Intent intent = new Intent(getBaseContext(), incomingCallCtrl.class);
+                            intent.putExtra("user", user);
+                            intent.putExtra("pwd", pwd);
+                            intent.putExtra("ipAddress", ipAddress);
+                            intent.putExtra("sessionId", sessionId);
+                            intent.putExtra("acCSRFToken", acCSRFToken);
+                            if(connected == 0)
+                            {
+                                intent.putExtra("connected", "0");
+                            }
+                            else if(connected == 1)
+                            {
+                                intent.putExtra("connected", "1");
+                            }
+
+                            startActivity(intent);
+                        }
+
+                        return true;
+                }
+
+                return false;
+            }
+        });
+
+        declineCallButton.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View view, MotionEvent motionEvent) {
+
+                switch (motionEvent.getAction())
+                {
+                    case MotionEvent.ACTION_DOWN:
+                        declineCallButton.setBackgroundResource(R.drawable.b4p);
+                        return true;
+                    case MotionEvent.ACTION_UP:
+                        declineCallButton.setBackgroundResource(R.drawable.b4);
+
+                        try {
+                            incomingCallProc(0);
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+
+                        return true;
+                }
+
+                return false;
             }
         });
 
 
-        confControlButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if(connected > 0)
-                {
-                    Intent intent = new Intent(getBaseContext(), contactActivity.class);
-                    intent.putExtra("user", user);
-                    intent.putExtra("pwd", pwd);
-                    intent.putExtra("ipAddress", ipAddress);
-                    intent.putExtra("sessionId", sessionId);
-                    intent.putExtra("acCSRFToken", acCSRFToken);
-                    if(connected == 0)
-                    {
-                        intent.putExtra("connected", "0");
-                    }
-                    else if(connected == 1)
-                    {
-                        intent.putExtra("connected", "1");
-                    }
 
-                    startActivity(intent);
-                }
-                else
-                {
-                    Context context = getApplicationContext();
-                    CharSequence text = "Requiere conectarse al dispositivo primero";
-                    int duration = Toast.LENGTH_SHORT;
-
-                    Toast toast = Toast.makeText(context, text, duration);
-                    toast.show();
-                }
-            }
-        });
-
-        acceptCallButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-
-                if(connected > 0)
-                {
-                    try {
-                        incomingCallProc(1);
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                }
-                else
-                {
-                    Intent intent = new Intent(getBaseContext(), incomingCallCtrl.class);
-                    intent.putExtra("user", user);
-                    intent.putExtra("pwd", pwd);
-                    intent.putExtra("ipAddress", ipAddress);
-                    intent.putExtra("sessionId", sessionId);
-                    intent.putExtra("acCSRFToken", acCSRFToken);
-                    if(connected == 0)
-                    {
-                        intent.putExtra("connected", "0");
-                    }
-                    else if(connected == 1)
-                    {
-                        intent.putExtra("connected", "1");
-                    }
-
-                    startActivity(intent);
-                }
-            }
-        });
-
-        declineCallButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                try {
-                    incomingCallProc(0);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-        });
     }
 
     @Override
@@ -547,12 +580,12 @@ public class MainActivity extends AppCompatActivity {
 
         System.out.println("this is the sesion id: " + sessionId);
 
-        String loginString = "{\n\t\"user\": \"" + user + "\",\n\t\"password\": \"" + pwd + "\"\n}";
-        Context context = getApplicationContext();
-        int duration = Toast.LENGTH_SHORT;
-
-        Toast toast = Toast.makeText(context, loginString, duration);
-        toast.show();
+//        String loginString = "{\n\t\"user\": \"" + user + "\",\n\t\"password\": \"" + pwd + "\"\n}";
+//        Context context = getApplicationContext();
+//        int duration = Toast.LENGTH_SHORT;
+//
+//        Toast toast = Toast.makeText(context, loginString, duration);
+//        toast.show();
 
 
         MediaType mediaType = MediaType.parse("application/json");
@@ -788,8 +821,8 @@ public class MainActivity extends AppCompatActivity {
                                 Context context = getApplicationContext();
                                 int duration = Toast.LENGTH_SHORT;
 
-                                Toast toast = Toast.makeText(context, toastText, duration);
-                                toast.show();
+//                                Toast toast = Toast.makeText(context, toastText, duration);
+//                                toast.show();
                             }
                             else
                             {

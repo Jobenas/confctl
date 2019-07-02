@@ -12,6 +12,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.Toast;
 
 import org.json.JSONException;
@@ -60,11 +61,11 @@ public class incomingCallCtrl extends AppCompatActivity {
         acCSRFToken = getIntent().getStringExtra("acCSRFToken");
         connected = parseInt(getIntent().getStringExtra("connected"));
 
-        Button upButton = findViewById(R.id.upButton);
-        Button downButton = findViewById(R.id.downButton);
-        Button rightButton = findViewById(R.id.rightButton);
-        Button leftButton = findViewById(R.id.leftButton);
-        Button backButton = findViewById(R.id.backButton);
+        final ImageButton upButton = findViewById(R.id.upButton);
+        final ImageButton downButton = findViewById(R.id.downButton);
+        final ImageButton rightButton = findViewById(R.id.rightButton);
+        final ImageButton leftButton = findViewById(R.id.leftButton);
+        final ImageButton backButton = findViewById(R.id.backButton);
 
         upButton.setOnTouchListener(new View.OnTouchListener() {
             @Override
@@ -73,6 +74,7 @@ public class incomingCallCtrl extends AppCompatActivity {
                 switch (motionEvent.getAction())
                 {
                     case MotionEvent.ACTION_DOWN:
+                        upButton.setBackgroundResource(R.drawable.b10p);
                         if (connected == 1)
                         {
                             try
@@ -85,6 +87,7 @@ public class incomingCallCtrl extends AppCompatActivity {
                         }
                         return true;
                     case MotionEvent.ACTION_UP:
+                        upButton.setBackgroundResource(R.drawable.b10);
                         if (connected == 1)
                         {
                             try
@@ -107,6 +110,7 @@ public class incomingCallCtrl extends AppCompatActivity {
                 switch (motionEvent.getAction())
                 {
                     case MotionEvent.ACTION_DOWN:
+                        leftButton.setBackgroundResource(R.drawable.b13p);
                         if (connected == 1)
                         {
                             try
@@ -118,6 +122,7 @@ public class incomingCallCtrl extends AppCompatActivity {
                         }
                         return true;
                     case MotionEvent.ACTION_UP:
+                        leftButton.setBackgroundResource(R.drawable.b13);
                         if (connected == 1)
                         {
                             try
@@ -140,7 +145,7 @@ public class incomingCallCtrl extends AppCompatActivity {
                 switch (motionEvent.getAction())
                 {
                     case MotionEvent.ACTION_DOWN:
-
+                        rightButton.setBackgroundResource(R.drawable.b11p);
                         if (connected == 1)
                         {
                             try
@@ -152,6 +157,7 @@ public class incomingCallCtrl extends AppCompatActivity {
                         }
                         return true;
                     case MotionEvent.ACTION_UP:
+                        rightButton.setBackgroundResource(R.drawable.b11);
                         if (connected == 1)
                         {
                             try
@@ -174,6 +180,7 @@ public class incomingCallCtrl extends AppCompatActivity {
                 switch (motionEvent.getAction())
                 {
                     case MotionEvent.ACTION_DOWN:
+                        downButton.setBackgroundResource(R.drawable.b12p);
                         if (connected == 1)
                         {
                             try
@@ -185,6 +192,7 @@ public class incomingCallCtrl extends AppCompatActivity {
                         }
                         return true;
                     case MotionEvent.ACTION_UP:
+                        downButton.setBackgroundResource(R.drawable.b12);
                         if (connected == 1)
                         {
                             try
@@ -200,30 +208,69 @@ public class incomingCallCtrl extends AppCompatActivity {
             }
         });
 
-        backButton.setOnClickListener(new View.OnClickListener() {
+        backButton.setOnTouchListener(new View.OnTouchListener() {
             @Override
-            public void onClick(View view) {
-                stopRepeatingTask();
-
-                Intent intent = new Intent(getBaseContext(), MainActivity.class);
-                intent.putExtra("user", user);
-                intent.putExtra("pwd", pwd);
-                intent.putExtra("ipAddress", ipAddress);
-                intent.putExtra("sessionId", sessionId);
-                intent.putExtra("acCSRFToken", acCSRFToken);
-                if(connected == 0)
+            public boolean onTouch(View view, MotionEvent motionEvent) {
+                switch (motionEvent.getAction())
                 {
-                    intent.putExtra("connected", "0");
-                }
-                else if(connected == 1)
-                {
-                    intent.putExtra("connected", "1");
-                }
+                    case MotionEvent.ACTION_DOWN:
+                        backButton.setBackgroundResource(R.drawable.b14p);
+
+                        return true;
+                    case MotionEvent.ACTION_UP:
+                        backButton.setBackgroundResource(R.drawable.b14);
+
+                        stopRepeatingTask();
+
+                        Intent intent = new Intent(getBaseContext(), MainActivity.class);
+                        intent.putExtra("user", user);
+                        intent.putExtra("pwd", pwd);
+                        intent.putExtra("ipAddress", ipAddress);
+                        intent.putExtra("sessionId", sessionId);
+                        intent.putExtra("acCSRFToken", acCSRFToken);
+                        if(connected == 0)
+                        {
+                            intent.putExtra("connected", "0");
+                        }
+                        else if(connected == 1)
+                        {
+                            intent.putExtra("connected", "1");
+                        }
 
 
-                startActivity(intent);
+                        startActivity(intent);
+
+                        return true;
+                }
+
+                return false;
             }
         });
+
+//        backButton.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                stopRepeatingTask();
+//
+//                Intent intent = new Intent(getBaseContext(), MainActivity.class);
+//                intent.putExtra("user", user);
+//                intent.putExtra("pwd", pwd);
+//                intent.putExtra("ipAddress", ipAddress);
+//                intent.putExtra("sessionId", sessionId);
+//                intent.putExtra("acCSRFToken", acCSRFToken);
+//                if(connected == 0)
+//                {
+//                    intent.putExtra("connected", "0");
+//                }
+//                else if(connected == 1)
+//                {
+//                    intent.putExtra("connected", "1");
+//                }
+//
+//
+//                startActivity(intent);
+//            }
+//        });
 
         mHandler = new Handler();
         startRepeatingTask();
