@@ -39,6 +39,7 @@ public class settingsActivity extends AppCompatActivity {
         final EditText ipEdit = findViewById(R.id.ipEdittext);
 
         Button saveButton = findViewById(R.id.saveIPButton);
+        Button backButton = findViewById(R.id.backButton);
 
         Context context = this;
         File directory = context.getFilesDir();
@@ -126,6 +127,15 @@ public class settingsActivity extends AppCompatActivity {
 
                 Toast toast = Toast.makeText(context, text, duration);
                 toast.show();
+            }
+        });
+
+        backButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(getBaseContext(), welcomeMsg.class);
+
+                startActivity(intent);
             }
         });
 

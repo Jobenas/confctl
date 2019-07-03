@@ -74,12 +74,23 @@
         android:layout_marginTop="20dp">
 
         <Button
+            android:id="@+id/saveIPButton"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:text="Guardar"
             android:layout_marginTop="10dp"
             android:layout_marginLeft="25dp"
-            android:id="@+id/saveIPButton" />
+            android:layout_marginStart="25dp"
+            />
+
+        <Button
+            android:id="@+id/backButton"
+            android:layout_width="105dp"
+            android:layout_height="match_parent"
+            android:layout_marginStart="20dp"
+            android:layout_marginLeft="20dp"
+            android:layout_marginTop="10dp"
+            android:text="Regresar" />
 
     </LinearLayout>
 

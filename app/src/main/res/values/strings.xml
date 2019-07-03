@@ -19,4 +19,11 @@
     <string name="decline_call_string">Rechazar\nLlamada</string>
     <string name="cancel_contact_string">Regresar</string>
     <string name="title_activity_incoming_call_ctrl">incomingCallCtrl</string>
+    <string name="title_activity_welcome_msg">welcomeMsg</string>
+    <string name="textview1">Para iniciar la videoconferencia seguir los siquientes pasos</string>
+    <string name="textview2">1)Oprimir el botón de inicioo en esta pantalla</string>
+    <string name="textview3">2)Ingresar a control de cámara para ajustar la posición de la cámara</string>
+    <string name="textview4">3)Ingresar a Control de Conferencia para iniciar la llamada</string>
+    <string name="saveString">Guardar</string>
+    <string name="returnString">Regresar</string>
 </resources>

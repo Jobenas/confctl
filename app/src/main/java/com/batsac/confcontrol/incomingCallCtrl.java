@@ -247,33 +247,16 @@ public class incomingCallCtrl extends AppCompatActivity {
             }
         });
 
-//        backButton.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                stopRepeatingTask();
-//
-//                Intent intent = new Intent(getBaseContext(), MainActivity.class);
-//                intent.putExtra("user", user);
-//                intent.putExtra("pwd", pwd);
-//                intent.putExtra("ipAddress", ipAddress);
-//                intent.putExtra("sessionId", sessionId);
-//                intent.putExtra("acCSRFToken", acCSRFToken);
-//                if(connected == 0)
-//                {
-//                    intent.putExtra("connected", "0");
-//                }
-//                else if(connected == 1)
-//                {
-//                    intent.putExtra("connected", "1");
-//                }
-//
-//
-//                startActivity(intent);
-//            }
-//        });
-
         mHandler = new Handler();
         startRepeatingTask();
+
+        //send power command to terminal to try to work with the camera controls
+        try {
+            emulateRemote(0,26);
+            emulateRemote(2, 26);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     Runnable mGetMailboxData  = new Runnable() {
@@ -363,7 +346,7 @@ public class incomingCallCtrl extends AppCompatActivity {
                                 int duration = Toast.LENGTH_SHORT;
 
                                 Toast toast = Toast.makeText(context, toastText, duration);
-                                toast.show();
+//                                toast.show();
                             }
                             else
                             {
@@ -452,6 +435,86 @@ public class incomingCallCtrl extends AppCompatActivity {
                             else {
 
                                 System.out.println(myResponse);
+                            }
+
+
+                        }
+                        catch (JSONException e)
+                        {
+                            e.printStackTrace();
+                        }
+                    }
+                });
+            }
+        });
+    }
+
+    void emulateRemote(int keyState, int keyCode) throws IOException
+    {
+        OkHttpClient client = new OkHttpClient();
+
+        MediaType mediaType = MediaType.parse("application/json");
+        RequestBody body = RequestBody.create(mediaType, "{\n\t\"keyState\":" + keyState +
+                ",\n\t\"keyCode\":" + keyCode + ",\n\t" +
+                "\"acCSRFToken\":\"" + acCSRFToken + "\"\n}");
+        Request request = new Request.Builder()
+                .url("http://" + ipAddress + "/action.cgi?ActionID=WEB_EmuRemoteKeyAPI")
+                .post(body)
+                .addHeader("userType", "web")
+                .addHeader("Cookie", "SessionID=" + sessionId)
+                .addHeader("Content-Type", "application/json")
+                .addHeader("User-Agent", "PostmanRuntime/7.15.0")
+                .addHeader("Accept", "*/*")
+                .addHeader("Cache-Control", "no-cache")
+                .addHeader("Postman-Token", "c7613bae-2920-4285-a537-5c3efc1e3ac8,73cce5d7-dea2-44da-93a7-20603ac5826b")
+                .addHeader("Host", ipAddress)
+                .addHeader("accept-encoding", "gzip, deflate")
+                .addHeader("content-length", "81")
+                .addHeader("Connection", "keep-alive")
+                .addHeader("cache-control", "no-cache")
+                .build();
+
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+
+                System.out.println("Something failed, " + e.toString());
+
+                call.cancel();
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+//                System.out.println("got some response");
+
+                final String myResponse = response.body().string();
+
+                incomingCallCtrl.this.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+
+                        try
+                        {
+                            JSONObject json = new JSONObject(myResponse);
+
+                            int status = json.getInt("success");
+
+                            String toastText = "";
+
+                            if (status == 0)
+                            {
+                                toastText = "Error al intentar iniciar el modo presentación";
+
+                                Context context = getApplicationContext();
+                                int duration = Toast.LENGTH_SHORT;
+
+                                Toast toast = Toast.makeText(context, toastText, duration);
+                                toast.show();
+                            }
+                            else
+                            {
+//                                System.out.println(myResponse);
+                                String a = "1";
                             }
 
 

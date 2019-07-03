@@ -97,60 +97,25 @@ public class MainActivity extends AppCompatActivity {
 
 //            connected = 1;
         }
+        else
+        {
+            try {
+                connectToVC();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
 
-        final ImageButton onButton = findViewById(R.id.onButton);
+//        final ImageButton onButton = findViewById(R.id.onButton);
         final ImageButton presentationButton = findViewById(R.id.presentationButton);
         final ImageButton offButton = findViewById(R.id.offButton);
         final ImageButton confControlButton = findViewById(R.id.confControlButton);
         final ImageButton acceptCallButton = findViewById(R.id.acceptCallButton);
-        final ImageButton declineCallButton = findViewById(R.id.declineCallButton);
+//        final ImageButton declineCallButton = findViewById(R.id.declineCallButton);
 
         mHandler = new Handler();
 
         startRepeatingTask();
-
-        onButton.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View view, MotionEvent motionEvent) {
-
-                switch (motionEvent.getAction())
-                {
-                    case MotionEvent.ACTION_DOWN:
-                        onButton.setBackgroundResource(R.drawable.b1p);
-                        return true;
-                    case MotionEvent.ACTION_UP:
-                        onButton.setBackgroundResource(R.drawable.b1);
-                        if(user.equals("") && pwd.equals("") && ipAddress.equals(""))
-                        {
-                            Context context = getApplicationContext();
-                            CharSequence text = "Dispositivo no Configurado";
-                            int duration = Toast.LENGTH_SHORT;
-
-                            Toast toast = Toast.makeText(context, text, duration);
-                            toast.show();
-                        }
-                        else
-                        {
-
-                            try {
-                                connectToVC();
-                            } catch (IOException e) {
-                                e.printStackTrace();
-                            }
-
-                            Context context = getApplicationContext();
-                            CharSequence text = "Dispositivo Encendido";
-                            int duration = Toast.LENGTH_SHORT;
-
-                            Toast toast = Toast.makeText(context, text, duration);
-                            toast.show();
-                        }
-                        return true;
-                }
-
-                return false;
-            }
-        });
 
         presentationButton.setOnTouchListener(new View.OnTouchListener() {
             @Override
@@ -279,38 +244,55 @@ public class MainActivity extends AppCompatActivity {
                 switch (motionEvent.getAction())
                 {
                     case MotionEvent.ACTION_DOWN:
-                        acceptCallButton.setBackgroundResource(R.drawable.b3p);
+                        acceptCallButton.setBackgroundResource(R.drawable.b18p);
                         return true;
                     case MotionEvent.ACTION_UP:
-                        acceptCallButton.setBackgroundResource(R.drawable.b3);
+                        acceptCallButton.setBackgroundResource(R.drawable.b18);
 
-                        if(connected > 0)
+                        Intent intent = new Intent(getBaseContext(), incomingCallCtrl.class);
+                        intent.putExtra("user", user);
+                        intent.putExtra("pwd", pwd);
+                        intent.putExtra("ipAddress", ipAddress);
+                        intent.putExtra("sessionId", sessionId);
+                        intent.putExtra("acCSRFToken", acCSRFToken);
+                        if(connected == 0)
                         {
-                            try {
-                                incomingCallProc(1);
-                            } catch (IOException e) {
-                                e.printStackTrace();
-                            }
+                            intent.putExtra("connected", "0");
                         }
-                        else
+                        else if(connected == 1)
                         {
-                            Intent intent = new Intent(getBaseContext(), incomingCallCtrl.class);
-                            intent.putExtra("user", user);
-                            intent.putExtra("pwd", pwd);
-                            intent.putExtra("ipAddress", ipAddress);
-                            intent.putExtra("sessionId", sessionId);
-                            intent.putExtra("acCSRFToken", acCSRFToken);
-                            if(connected == 0)
-                            {
-                                intent.putExtra("connected", "0");
-                            }
-                            else if(connected == 1)
-                            {
-                                intent.putExtra("connected", "1");
-                            }
+                            intent.putExtra("connected", "1");
+                        }
 
-                            startActivity(intent);
-                        }
+                        startActivity(intent);
+
+//                        if(connected > 0)
+//                        {
+//                            try {
+//                                incomingCallProc(1);
+//                            } catch (IOException e) {
+//                                e.printStackTrace();
+//                            }
+//                        }
+//                        else
+//                        {
+//                            Intent intent = new Intent(getBaseContext(), incomingCallCtrl.class);
+//                            intent.putExtra("user", user);
+//                            intent.putExtra("pwd", pwd);
+//                            intent.putExtra("ipAddress", ipAddress);
+//                            intent.putExtra("sessionId", sessionId);
+//                            intent.putExtra("acCSRFToken", acCSRFToken);
+//                            if(connected == 0)
+//                            {
+//                                intent.putExtra("connected", "0");
+//                            }
+//                            else if(connected == 1)
+//                            {
+//                                intent.putExtra("connected", "1");
+//                            }
+//
+//                            startActivity(intent);
+//                        }
 
                         return true;
                 }
@@ -319,32 +301,30 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        declineCallButton.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View view, MotionEvent motionEvent) {
-
-                switch (motionEvent.getAction())
-                {
-                    case MotionEvent.ACTION_DOWN:
-                        declineCallButton.setBackgroundResource(R.drawable.b4p);
-                        return true;
-                    case MotionEvent.ACTION_UP:
-                        declineCallButton.setBackgroundResource(R.drawable.b4);
-
-                        try {
-                            incomingCallProc(0);
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-
-                        return true;
-                }
-
-                return false;
-            }
-        });
-
-
+//        declineCallButton.setOnTouchListener(new View.OnTouchListener() {
+//            @Override
+//            public boolean onTouch(View view, MotionEvent motionEvent) {
+//
+//                switch (motionEvent.getAction())
+//                {
+//                    case MotionEvent.ACTION_DOWN:
+//                        declineCallButton.setBackgroundResource(R.drawable.b4p);
+//                        return true;
+//                    case MotionEvent.ACTION_UP:
+//                        declineCallButton.setBackgroundResource(R.drawable.b4);
+//
+//                        try {
+//                            incomingCallProc(0);
+//                        } catch (IOException e) {
+//                            e.printStackTrace();
+//                        }
+//
+//                        return true;
+//                }
+//
+//                return false;
+//            }
+//        });
 
     }
 
@@ -1168,6 +1148,9 @@ public class MainActivity extends AppCompatActivity {
 
                                 Toast toast = Toast.makeText(context, toastText, duration);
                                 toast.show();
+
+                                Intent intent = new Intent(getBaseContext(), welcomeMsg.class);
+                                startActivity(intent);
                             }
 
 

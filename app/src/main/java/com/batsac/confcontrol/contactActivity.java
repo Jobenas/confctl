@@ -285,7 +285,7 @@ public class contactActivity extends AppCompatActivity {
                                 int duration = Toast.LENGTH_SHORT;
 
                                 Toast toast = Toast.makeText(context, toastText, duration);
-                                toast.show();
+//                                toast.show();
                             }
                             else
                             {
