@@ -20,10 +20,17 @@
     <string name="cancel_contact_string">Regresar</string>
     <string name="title_activity_incoming_call_ctrl">incomingCallCtrl</string>
     <string name="title_activity_welcome_msg">welcomeMsg</string>
-    <string name="textview1">Para iniciar la videoconferencia seguir los siquientes pasos</string>
-    <string name="textview2">1)Oprimir el botón de inicioo en esta pantalla</string>
+    <string name="pantalla_inicial_string">PANTALLA INICIAL</string>
+    <string name="sala_videoconf_string">Sala de Videoconferencia</string>
     <string name="textview3">2)Ingresar a control de cámara para ajustar la posición de la cámara</string>
-    <string name="textview4">3)Ingresar a Control de Conferencia para iniciar la llamada</string>
+    <string name="sala_nombre_string">Sala</string>
     <string name="saveString">Guardar</string>
     <string name="returnString">Regresar</string>
+    <string name="title_activity_present_mode">presentModeActivity</string>
+    <string name="contact_view_title_string">SALAS y OFICINAS DE VIDEOCONFERENCIA</string>
+    <string name="contact_instruction1_string">Seleccione las salas a las que requiere conectarse,</string>
+    <string name="contact_instruction2_string">luego preseione CREAR CONFERENCIA</string>
+    <string name="call_control_string1">Antes de salir de la Sala, por favor</string>
+    <string name="call_control_string2">apagar la luz de la sala y</string>
+    <string name="call_control_string3">dejar las sillas ordenadas</string>
 </resources>

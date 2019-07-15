@@ -23,23 +23,23 @@ public class welcomeMsg extends AppCompatActivity {
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-       final ImageButton startButton = findViewById(R.id.startButton);
+       final ImageButton presentationButton = findViewById(R.id.presentationButton);
        final ImageButton settingsButton = findViewById(R.id.settingsButton);
 
-       startButton.setOnTouchListener(new View.OnTouchListener() {
+       presentationButton.setOnTouchListener(new View.OnTouchListener() {
            @Override
            public boolean onTouch(View view, MotionEvent motionEvent) {
 
                switch(motionEvent.getAction())
                {
                    case MotionEvent.ACTION_DOWN:
-                       startButton.setBackgroundResource(R.drawable.b16p);
+                       presentationButton.setBackgroundResource(R.drawable.b16p);
 
                        return true;
                    case MotionEvent.ACTION_UP:
-                       startButton.setBackgroundResource(R.drawable.b16);
+                       presentationButton.setBackgroundResource(R.drawable.b16);
 
-                       Intent intent = new Intent(getBaseContext(), MainActivity.class);
+                       Intent intent = new Intent(getBaseContext(), presentModeActivity.class);
                        startActivity(intent);
 
                        return true;

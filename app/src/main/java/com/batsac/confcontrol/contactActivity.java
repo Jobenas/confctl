@@ -100,10 +100,10 @@ public class contactActivity extends AppCompatActivity {
                 {
                     case MotionEvent.ACTION_DOWN:
 
-                        startCallButton.setBackgroundResource(R.drawable.b9p);
+                        startCallButton.setBackgroundResource(R.drawable.create_pressed);
                         return true;
                     case MotionEvent.ACTION_UP:
-                        startCallButton.setBackgroundResource(R.drawable.b9);
+                        startCallButton.setBackgroundResource(R.drawable.create_normal);
 
                         System.out.println("Number of checked devices: " + indexes.size());
                         if(indexes.size() == 1)
@@ -178,6 +178,7 @@ public class contactActivity extends AppCompatActivity {
                         intent.putExtra("ipAddress", ipAddress);
                         intent.putExtra("sessionId", sessionId);
                         intent.putExtra("acCSRFToken", acCSRFToken);
+                        intent.putExtra("presentation", "false");
                         if(connected == 0)
                         {
                             intent.putExtra("connected", "0");
@@ -632,6 +633,7 @@ public class contactActivity extends AppCompatActivity {
                                 intent.putExtra("sessionId", sessionId);
                                 intent.putExtra("acCSRFToken", acCSRFToken);
                                 intent.putExtra("type", "call");
+                                intent.putExtra("presentation", "false");
                                 if(connected == 0)
                                 {
                                     intent.putExtra("connected", "0");
@@ -754,6 +756,7 @@ public class contactActivity extends AppCompatActivity {
                                 intent.putExtra("sessionId", sessionId);
                                 intent.putExtra("acCSRFToken", acCSRFToken);
                                 intent.putExtra("type", "conference");
+                                intent.putExtra("presentation", "false");
 
                                 startActivity(intent);
                             }

@@ -41,6 +41,8 @@ public class callControl extends AppCompatActivity {
 
     String callType;
 
+    String presentation;
+
     int connected = 0;
 
     private int mInterval = 3000;
@@ -61,16 +63,22 @@ public class callControl extends AppCompatActivity {
         acCSRFToken = getIntent().getStringExtra("acCSRFToken");
         callType = getIntent().getStringExtra("type");
         connected = parseInt(getIntent().getStringExtra("connected"));
+        presentation = getIntent().getStringExtra("presentation");
 
-//        connected = 1;
+        System.out.println("Got call type: " + callType);
 
-        final ImageButton upButton = findViewById(R.id.upButton);
-        final ImageButton downButton = findViewById(R.id.downButton);
-        final ImageButton rightButton = findViewById(R.id.rightButton);
-        final ImageButton leftButton = findViewById(R.id.leftButton);
-        final ImageButton hangUpButton = findViewById(R.id.hangUpbutton);
+        final ImageButton camCtrlButton = findViewById(R.id.camCtrlButton);
+        final ImageButton sendContentButton = findViewById(R.id.sendContentButton);
+        final ImageButton disconnectButton = findViewById(R.id.disconnectButton);
+        final ImageButton offButton = findViewById(R.id.offButton);
 
-        upButton.setOnTouchListener(new View.OnTouchListener() {
+
+        if(presentation.equals("true"))
+        {
+            sendContentButton.setEnabled(false);
+        }
+
+        camCtrlButton.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View view, MotionEvent motionEvent) {
 
@@ -78,178 +86,78 @@ public class callControl extends AppCompatActivity {
                 {
                     case MotionEvent.ACTION_DOWN:
 
-                        upButton.setBackgroundResource(R.drawable.b10p);
+                        camCtrlButton.setBackgroundResource(R.drawable.camctl_pressed);
 
-                        if (connected == 1)
-                        {
-                            try
-                            {
-                                System.out.println("Touching down");
-                                moveCamera(2);
-                            } catch (IOException e) {
-                                e.printStackTrace();
-                            }
-                        }
                         return true;
                     case MotionEvent.ACTION_UP:
-                        upButton.setBackgroundResource(R.drawable.b10);
-                        if (connected == 1)
-                        {
-                            try
-                            {
-                                moveCamera(10);
-                            } catch (IOException e) {
-                                e.printStackTrace();
-                            }
-                        }
+
+                        camCtrlButton.setBackgroundResource(R.drawable.camctrl_normal);
+
+                        Intent intent = new Intent(getBaseContext(), incomingCallCtrl.class);
+                        intent.putExtra("user", user);
+                        intent.putExtra("pwd", pwd);
+                        intent.putExtra("ipAddress", ipAddress);
+                        intent.putExtra("sessionId", sessionId);
+                        intent.putExtra("acCSRFToken", acCSRFToken);
+                        intent.putExtra("connected", "1");
+                        intent.putExtra("presentation", presentation);
+                        intent.putExtra("type", callType);
+
+                        startActivity(intent);
+
                         return true;
                 }
+
                 return false;
             }
         });
 
-        leftButton.setOnTouchListener(new View.OnTouchListener() {
+        sendContentButton.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View view, MotionEvent motionEvent) {
-
                 switch (motionEvent.getAction())
                 {
                     case MotionEvent.ACTION_DOWN:
-                        leftButton.setBackgroundResource(R.drawable.b13p);
-                        if (connected == 1)
-                        {
-                            try
-                            {
-                                moveCamera(1);
-                            } catch (IOException e) {
-                                e.printStackTrace();
-                            }
-                        }
+
+                        sendContentButton.setBackgroundResource(R.drawable.contentsend_pressed);
+
                         return true;
                     case MotionEvent.ACTION_UP:
-                        leftButton.setBackgroundResource(R.drawable.b13p);
-                        if (connected == 1)
-                        {
-                            try
-                            {
-                                moveCamera(9);
-                            } catch (IOException e) {
-                                e.printStackTrace();
-                            }
+
+                        sendContentButton.setBackgroundResource(R.drawable.contentsend_normal);
+
+                        try {
+                            emulateRemote(0, 8);
+                            emulateRemote(2, 8);
+                        } catch (IOException e) {
+                            e.printStackTrace();
                         }
+
+
                         return true;
                 }
+
                 return false;
             }
         });
 
-        rightButton.setOnTouchListener(new View.OnTouchListener() {
+        disconnectButton.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View view, MotionEvent motionEvent) {
 
                 switch (motionEvent.getAction())
                 {
                     case MotionEvent.ACTION_DOWN:
-                        rightButton.setBackgroundResource(R.drawable.b11p);
-                        if (connected == 1)
-                        {
-                            try
-                            {
-                                moveCamera(0);
-                            } catch (IOException e) {
-                                e.printStackTrace();
-                            }
-                        }
-                        return true;
-                    case MotionEvent.ACTION_UP:
-                        rightButton.setBackgroundResource(R.drawable.b11);
-                        if (connected == 1)
-                        {
-                            try
-                            {
-                                moveCamera(8);
-                            } catch (IOException e) {
-                                e.printStackTrace();
-                            }
-                        }
-                        return true;
-                }
-                return false;
-            }
-        });
-
-        downButton.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View view, MotionEvent motionEvent) {
-
-                switch (motionEvent.getAction())
-                {
-                    case MotionEvent.ACTION_DOWN:
-                        downButton.setBackgroundResource(R.drawable.b12p);
-                        if (connected == 1)
-                        {
-                            try
-                            {
-                                moveCamera(3);
-                            } catch (IOException e) {
-                                e.printStackTrace();
-                            }
-                        }
-                        return true;
-                    case MotionEvent.ACTION_UP:
-                        downButton.setBackgroundResource(R.drawable.b12);
-                        if (connected == 1)
-                        {
-                            try
-                            {
-                                moveCamera(11);
-                            } catch (IOException e) {
-                                e.printStackTrace();
-                            }
-                        }
-                        return true;
-                }
-                return false;
-            }
-        });
-
-        hangUpButton.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View view, MotionEvent motionEvent) {
-
-                switch (motionEvent.getAction())
-                {
-                    case MotionEvent.ACTION_DOWN:
-                        hangUpButton.setBackgroundResource(R.drawable.b15p);
+                        disconnectButton.setBackgroundResource(R.drawable.disc_pressed);
 
                         return true;
                     case MotionEvent.ACTION_UP:
-                        hangUpButton.setBackgroundResource(R.drawable.b15);
+                        disconnectButton.setBackgroundResource(R.drawable.disc_normal);
 
                         if(callType.equals("call"))
                         {
                             try {
                                 hangUpCall();
-
-                                stopRepeatingTask();
-
-                                Intent intent = new Intent(getBaseContext(), contactActivity.class);
-                                intent.putExtra("user", user);
-                                intent.putExtra("pwd", pwd);
-                                intent.putExtra("ipAddress", ipAddress);
-                                intent.putExtra("sessionId", sessionId);
-                                intent.putExtra("acCSRFToken", acCSRFToken);
-                                if(connected == 0)
-                                {
-                                    intent.putExtra("connected", "0");
-                                }
-                                else if(connected == 1)
-                                {
-                                    intent.putExtra("connected", "1");
-                                }
-
-                                startActivity(intent);
-
                             } catch (IOException e) {
                                 e.printStackTrace();
                             }
@@ -260,31 +168,10 @@ public class callControl extends AppCompatActivity {
 
                             try {
                                 endConference();
-
-                                stopRepeatingTask();
-
-                                Intent intent = new Intent(getBaseContext(), contactActivity.class);
-                                intent.putExtra("user", user);
-                                intent.putExtra("pwd", pwd);
-                                intent.putExtra("ipAddress", ipAddress);
-                                intent.putExtra("sessionId", sessionId);
-                                intent.putExtra("acCSRFToken", acCSRFToken);
-                                if(connected == 0)
-                                {
-                                    intent.putExtra("connected", "0");
-                                }
-                                else if(connected == 1)
-                                {
-                                    intent.putExtra("connected", "1");
-                                }
-
-                                startActivity(intent);
-
                             } catch (IOException e) {
                                 e.printStackTrace();
                             }
                         }
-
                         return true;
                 }
 
@@ -292,71 +179,44 @@ public class callControl extends AppCompatActivity {
             }
         });
 
-//        hangUpButton.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//
-//                if(callType.equals("call"))
-//                {
-//                    try {
-//                        hangUpCall();
-//
-//                        stopRepeatingTask();
-//
-//                        Intent intent = new Intent(getBaseContext(), contactActivity.class);
-//                        intent.putExtra("user", user);
-//                        intent.putExtra("pwd", pwd);
-//                        intent.putExtra("ipAddress", ipAddress);
-//                        intent.putExtra("sessionId", sessionId);
-//                        intent.putExtra("acCSRFToken", acCSRFToken);
-//                        if(connected == 0)
-//                        {
-//                            intent.putExtra("connected", "0");
-//                        }
-//                        else if(connected == 1)
-//                        {
-//                            intent.putExtra("connected", "1");
-//                        }
-//
-//                        startActivity(intent);
-//
-//                    } catch (IOException e) {
-//                        e.printStackTrace();
-//                    }
-//                }
-//                else if(callType.equals("conference"))
-//                {
-//                    System.out.println("Ending conference");
-//
-//                    try {
-//                        endConference();
-//
-//                        stopRepeatingTask();
-//
-//                        Intent intent = new Intent(getBaseContext(), contactActivity.class);
-//                        intent.putExtra("user", user);
-//                        intent.putExtra("pwd", pwd);
-//                        intent.putExtra("ipAddress", ipAddress);
-//                        intent.putExtra("sessionId", sessionId);
-//                        intent.putExtra("acCSRFToken", acCSRFToken);
-//                        if(connected == 0)
-//                        {
-//                            intent.putExtra("connected", "0");
-//                        }
-//                        else if(connected == 1)
-//                        {
-//                            intent.putExtra("connected", "1");
-//                        }
-//
-//                        startActivity(intent);
-//
-//                    } catch (IOException e) {
-//                        e.printStackTrace();
-//                    }
-//                }
-//
-//            }
-//        });
+        offButton.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View view, MotionEvent motionEvent) {
+
+                switch (motionEvent.getAction())
+                {
+                    case MotionEvent.ACTION_DOWN:
+                        offButton.setBackgroundResource(R.drawable.off_pressed);
+
+                        return true;
+                    case MotionEvent.ACTION_UP:
+                        offButton.setBackgroundResource(R.drawable.off_normal);
+
+                        stopRepeatingTask();
+                        connected = 0;
+                        try
+                        {
+                            startTermSleep();
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+
+                        Intent intent = new Intent(getBaseContext(), MainActivity.class);
+                        intent.putExtra("user", user);
+                        intent.putExtra("pwd", pwd);
+                        intent.putExtra("ipAddress", ipAddress);
+                        intent.putExtra("sessionId", sessionId);
+                        intent.putExtra("acCSRFToken", acCSRFToken);
+                        intent.putExtra("connected", "0");
+
+                        startActivity(intent);
+
+                        return true;
+                }
+
+                return false;
+            }
+        });
 
         mHandler = new Handler();
         startRepeatingTask();
@@ -455,89 +315,6 @@ public class callControl extends AppCompatActivity {
                             {
 //                                System.out.println(myResponse);
                                 String a = "1";
-                            }
-
-
-                        }
-                        catch (JSONException e)
-                        {
-                            e.printStackTrace();
-                        }
-                    }
-                });
-            }
-        });
-    }
-
-    void moveCamera(int direction) throws IOException
-    {
-        OkHttpClient client = new OkHttpClient();
-
-        System.out.println("this is the sesion id: " + sessionId);
-
-        MediaType mediaType = MediaType.parse("application/json");
-        RequestBody body = RequestBody.create(mediaType, "{\n\t\"camState\":\"localCam\"," +
-                "\n\t\"camAction\":" + direction + ",\n\t\"camPos\":255,\n\t\"camSrc\":0,\n\t\"" +
-                "acCSRFToken\":\"" + acCSRFToken + "\"\n}");
-        Request request = new Request.Builder()
-                .url("http://" + ipAddress + "/action.cgi?ActionID=WEB_CtrlCameraOpeateAPI")
-                .post(body)
-                .addHeader("userType", "web")
-                .addHeader("Cookie", "SessionID=" + sessionId)
-                .addHeader("Content-Type", "application/json")
-                .addHeader("User-Agent", "PostmanRuntime/7.15.0")
-                .addHeader("Accept", "*/*")
-                .addHeader("Cache-Control", "no-cache")
-                .addHeader("Postman-Token", "59520db8-8b48-42c1-bc07-0ed2c9b9fefc,4f048e94-763f-48fe-930e-e70cf26f5376")
-                .addHeader("Host", ipAddress)
-                .addHeader("accept-encoding", "gzip, deflate")
-                .addHeader("content-length", "120")
-                .addHeader("Connection", "keep-alive")
-                .addHeader("cache-control", "no-cache")
-                .build();
-
-        client.newCall(request).enqueue(new Callback() {
-            @Override
-            public void onFailure(Call call, IOException e) {
-
-                System.out.println("Something failed, " + e.toString());
-
-                call.cancel();
-            }
-
-            @Override
-            public void onResponse(Call call, Response response) throws IOException {
-                System.out.println("got some response");
-
-                final String myResponse = response.body().string();
-
-                System.out.println("control response: " + myResponse);
-
-                callControl.this.runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-
-                        try
-                        {
-                            JSONObject json = new JSONObject(myResponse);
-
-                            int status = json.getInt("success");
-
-                            String toastText = "";
-
-                            if (status == 0)
-                            {
-                                toastText = "Error al mover la camara";
-
-                                Context context = getApplicationContext();
-                                int duration = Toast.LENGTH_SHORT;
-
-                                Toast toast = Toast.makeText(context, toastText, duration);
-                                toast.show();
-                            }
-                            else {
-
-                                System.out.println(myResponse);
                             }
 
 
@@ -701,6 +478,254 @@ public class callControl extends AppCompatActivity {
 
                                 Toast toast = Toast.makeText(context, toastText, duration);
                                 toast.show();
+                            }
+
+
+                        }
+                        catch (JSONException e)
+                        {
+                            e.printStackTrace();
+                        }
+                    }
+                });
+            }
+        });
+    }
+
+    void emulateRemote(int keyState, int keyCode) throws IOException
+    {
+        OkHttpClient client = new OkHttpClient();
+
+        MediaType mediaType = MediaType.parse("application/json");
+        RequestBody body = RequestBody.create(mediaType, "{\n\t\"keyState\":" + keyState +
+                ",\n\t\"keyCode\":" + keyCode + ",\n\t" +
+                "\"acCSRFToken\":\"" + acCSRFToken + "\"\n}");
+        Request request = new Request.Builder()
+                .url("http://" + ipAddress + "/action.cgi?ActionID=WEB_EmuRemoteKeyAPI")
+                .post(body)
+                .addHeader("userType", "web")
+                .addHeader("Cookie", "SessionID=" + sessionId)
+                .addHeader("Content-Type", "application/json")
+                .addHeader("User-Agent", "PostmanRuntime/7.15.0")
+                .addHeader("Accept", "*/*")
+                .addHeader("Cache-Control", "no-cache")
+                .addHeader("Postman-Token", "c7613bae-2920-4285-a537-5c3efc1e3ac8,73cce5d7-dea2-44da-93a7-20603ac5826b")
+                .addHeader("Host", ipAddress)
+                .addHeader("accept-encoding", "gzip, deflate")
+                .addHeader("content-length", "81")
+                .addHeader("Connection", "keep-alive")
+                .addHeader("cache-control", "no-cache")
+                .build();
+
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+
+                System.out.println("Something failed, " + e.toString());
+
+                call.cancel();
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+//                System.out.println("got some response");
+
+                final String myResponse = response.body().string();
+
+
+
+                callControl.this.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+
+                        try
+                        {
+                            JSONObject json = new JSONObject(myResponse);
+
+                            int status = json.getInt("success");
+
+                            String toastText = "";
+
+                            if (status == 0)
+                            {
+                                toastText = "Error al intentar iniciar el modo presentación";
+
+                                Context context = getApplicationContext();
+                                int duration = Toast.LENGTH_SHORT;
+
+                                Toast toast = Toast.makeText(context, toastText, duration);
+                                toast.show();
+                            }
+                            else
+                            {
+//                                System.out.println(myResponse);
+                                String a = "1";
+                            }
+
+
+                        }
+                        catch (JSONException e)
+                        {
+                            e.printStackTrace();
+                        }
+                    }
+                });
+            }
+        });
+    }
+
+    void startTermSleep() throws IOException
+    {
+        OkHttpClient client = new OkHttpClient();
+
+        MediaType mediaType = MediaType.parse("application/json");
+        RequestBody body = RequestBody.create(mediaType, "{\n\t\"acCSRFToken\": \"" + acCSRFToken + "\"\n}");
+        Request request = new Request.Builder()
+                .url("http://" + ipAddress +"/action.cgi?ActionID=WEB_StartTermSleepAPI")
+                .post(body)
+                .addHeader("userType", "web")
+                .addHeader("Cookie", "SessionID=" + sessionId)
+                .addHeader("Content-Type", "application/json")
+                .addHeader("User-Agent", "PostmanRuntime/7.15.0")
+                .addHeader("Accept", "*/*")
+                .addHeader("Cache-Control", "no-cache")
+                .addHeader("Postman-Token", "e449a3a9-2470-4311-a425-981e723d5975,cf569ba5-8698-43b9-96df-2b8ef9485106")
+                .addHeader("Host", ipAddress)
+                .addHeader("accept-encoding", "gzip, deflate")
+                .addHeader("content-length", "53")
+                .addHeader("Connection", "keep-alive")
+                .addHeader("cache-control", "no-cache")
+                .build();
+
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+
+                System.out.println("Something failed, " + e.toString());
+
+                call.cancel();
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+//                System.out.println("got some response");
+
+                final String myResponse = response.body().string();
+
+                callControl.this.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+
+                        try
+                        {
+                            JSONObject json = new JSONObject(myResponse);
+
+                            int status = json.getInt("success");
+
+                            String toastText = "";
+
+                            if (status == 0)
+                            {
+                                toastText = "Error al intentar desconectar el equipo";
+
+                                Context context = getApplicationContext();
+                                int duration = Toast.LENGTH_SHORT;
+
+                                Toast toast = Toast.makeText(context, toastText, duration);
+                                toast.show();
+                            }
+                            else
+                            {
+                                logoutAPI();
+                            }
+
+
+                        }
+                        catch (JSONException e)
+                        {
+                            e.printStackTrace();
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                });
+            }
+        });
+    }
+
+    void logoutAPI() throws IOException
+    {
+        OkHttpClient client = new OkHttpClient();
+
+        MediaType mediaType = MediaType.parse("application/json");
+        RequestBody body = RequestBody.create(mediaType, "{\n\t\"acCSRFToken\": \"" + acCSRFToken + "\"\n}");
+        Request request = new Request.Builder()
+                .url("http://" + ipAddress + "/action.cgi?ActionID=WEB_LogOutAPI")
+                .post(body)
+                .addHeader("userType", "web")
+                .addHeader("Cookie", "SessionID=" + sessionId)
+                .addHeader("Content-Type", "application/json")
+                .addHeader("User-Agent", "PostmanRuntime/7.15.0")
+                .addHeader("Accept", "*/*")
+                .addHeader("Cache-Control", "no-cache")
+                .addHeader("Postman-Token", "e449a3a9-2470-4311-a425-981e723d5975,cf569ba5-8698-43b9-96df-2b8ef9485106")
+                .addHeader("Host", ipAddress)
+                .addHeader("accept-encoding", "gzip, deflate")
+                .addHeader("content-length", "53")
+                .addHeader("Connection", "keep-alive")
+                .addHeader("cache-control", "no-cache")
+                .build();
+
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+
+                System.out.println("Something failed, " + e.toString());
+
+                call.cancel();
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+//                System.out.println("got some response");
+
+                final String myResponse = response.body().string();
+
+                callControl.this.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+
+                        try
+                        {
+                            JSONObject json = new JSONObject(myResponse);
+
+                            int status = json.getInt("success");
+
+                            String toastText = "";
+
+                            if (status == 0)
+                            {
+                                toastText = "Error al intentar salir de sesiónn";
+
+                                Context context = getApplicationContext();
+                                int duration = Toast.LENGTH_SHORT;
+
+                                Toast toast = Toast.makeText(context, toastText, duration);
+                                toast.show();
+                            }
+                            else
+                            {
+//                                System.out.println(myResponse);
+                                toastText = "Desconexión al equipo completa";
+
+                                Context context = getApplicationContext();
+                                int duration = Toast.LENGTH_SHORT;
+
+                                Toast toast = Toast.makeText(context, toastText, duration);
+                                toast.show();
+
+                                Intent intent = new Intent(getBaseContext(), welcomeMsg.class);
+                                startActivity(intent);
                             }
 
 

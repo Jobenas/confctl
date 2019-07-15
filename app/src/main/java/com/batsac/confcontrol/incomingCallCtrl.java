@@ -38,6 +38,7 @@ public class incomingCallCtrl extends AppCompatActivity {
 
     String sessionId;
     String acCSRFToken;
+    String presentation;
 
     String callType;
 
@@ -60,6 +61,8 @@ public class incomingCallCtrl extends AppCompatActivity {
         sessionId = getIntent().getStringExtra("sessionId");
         acCSRFToken = getIntent().getStringExtra("acCSRFToken");
         connected = parseInt(getIntent().getStringExtra("connected"));
+        presentation = getIntent().getStringExtra("presentation");
+        callType = getIntent().getStringExtra("type");
 
         final ImageButton upButton = findViewById(R.id.upButton);
         final ImageButton downButton = findViewById(R.id.downButton);
@@ -74,7 +77,7 @@ public class incomingCallCtrl extends AppCompatActivity {
                 switch (motionEvent.getAction())
                 {
                     case MotionEvent.ACTION_DOWN:
-                        upButton.setBackgroundResource(R.drawable.b10p);
+                        upButton.setBackgroundResource(R.drawable.up_pressed);
                         if (connected == 1)
                         {
                             try
@@ -87,7 +90,7 @@ public class incomingCallCtrl extends AppCompatActivity {
                         }
                         return true;
                     case MotionEvent.ACTION_UP:
-                        upButton.setBackgroundResource(R.drawable.b10);
+                        upButton.setBackgroundResource(R.drawable.up_normal);
                         if (connected == 1)
                         {
                             try
@@ -110,7 +113,7 @@ public class incomingCallCtrl extends AppCompatActivity {
                 switch (motionEvent.getAction())
                 {
                     case MotionEvent.ACTION_DOWN:
-                        leftButton.setBackgroundResource(R.drawable.b13p);
+                        leftButton.setBackgroundResource(R.drawable.left_pressed);
                         if (connected == 1)
                         {
                             try
@@ -122,7 +125,7 @@ public class incomingCallCtrl extends AppCompatActivity {
                         }
                         return true;
                     case MotionEvent.ACTION_UP:
-                        leftButton.setBackgroundResource(R.drawable.b13);
+                        leftButton.setBackgroundResource(R.drawable.left_normal);
                         if (connected == 1)
                         {
                             try
@@ -145,7 +148,7 @@ public class incomingCallCtrl extends AppCompatActivity {
                 switch (motionEvent.getAction())
                 {
                     case MotionEvent.ACTION_DOWN:
-                        rightButton.setBackgroundResource(R.drawable.b11p);
+                        rightButton.setBackgroundResource(R.drawable.right_pressed);
                         if (connected == 1)
                         {
                             try
@@ -157,7 +160,7 @@ public class incomingCallCtrl extends AppCompatActivity {
                         }
                         return true;
                     case MotionEvent.ACTION_UP:
-                        rightButton.setBackgroundResource(R.drawable.b11);
+                        rightButton.setBackgroundResource(R.drawable.right_normal);
                         if (connected == 1)
                         {
                             try
@@ -180,7 +183,7 @@ public class incomingCallCtrl extends AppCompatActivity {
                 switch (motionEvent.getAction())
                 {
                     case MotionEvent.ACTION_DOWN:
-                        downButton.setBackgroundResource(R.drawable.b12p);
+                        downButton.setBackgroundResource(R.drawable.down_pressed);
                         if (connected == 1)
                         {
                             try
@@ -192,7 +195,7 @@ public class incomingCallCtrl extends AppCompatActivity {
                         }
                         return true;
                     case MotionEvent.ACTION_UP:
-                        downButton.setBackgroundResource(R.drawable.b12);
+                        downButton.setBackgroundResource(R.drawable.down_normal);
                         if (connected == 1)
                         {
                             try
@@ -222,12 +225,14 @@ public class incomingCallCtrl extends AppCompatActivity {
 
                         stopRepeatingTask();
 
-                        Intent intent = new Intent(getBaseContext(), MainActivity.class);
+                        Intent intent = new Intent(getBaseContext(), callControl.class);
                         intent.putExtra("user", user);
                         intent.putExtra("pwd", pwd);
                         intent.putExtra("ipAddress", ipAddress);
                         intent.putExtra("sessionId", sessionId);
                         intent.putExtra("acCSRFToken", acCSRFToken);
+                        intent.putExtra("presentation", presentation);
+                        intent.putExtra("type", callType);
                         if(connected == 0)
                         {
                             intent.putExtra("connected", "0");
@@ -353,8 +358,6 @@ public class incomingCallCtrl extends AppCompatActivity {
 //                                System.out.println(myResponse);
                                 String a = "1";
                             }
-
-
                         }
                         catch (JSONException e)
                         {

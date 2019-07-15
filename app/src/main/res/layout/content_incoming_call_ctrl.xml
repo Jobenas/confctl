@@ -2,7 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="horizontal"
+    android:orientation="vertical"
     android:padding="16dp"
     android:background="@android:color/black"
     android:gravity="center">
@@ -22,7 +22,7 @@
                 android:id="@+id/upButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:src="@drawable/b10"
+                android:src="@drawable/up_normal"
                 android:background="@android:color/black"/>
         </LinearLayout>
 
@@ -36,7 +36,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:layout_marginTop="3dp"
-                android:src="@drawable/b13"
+                android:src="@drawable/left_normal"
                 android:background="@android:color/black"/>
 
             <ImageButton
@@ -46,7 +46,9 @@
                 android:layout_marginTop="3dp"
                 android:background="@android:color/black"
                 android:gravity="center"
-                android:src="@drawable/b11" />
+                android:src="@drawable/right_normal"
+                android:layout_marginLeft="70dp"
+                android:layout_marginStart="70dp" />
 
         </LinearLayout>
 
@@ -62,18 +64,18 @@
                 android:layout_marginTop="3dp"
                 android:background="@android:color/black"
                 android:gravity="center"
-                android:src="@drawable/b12" />
+                android:src="@drawable/down_normal" />
         </LinearLayout>
     </LinearLayout>
 
 
 
     <LinearLayout
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginLeft="20dp"
         android:layout_marginStart="20dp"
-        android:gravity="center">
+        android:gravity="end|bottom">
         <ImageButton
             android:id="@+id/backButton"
             android:layout_width="wrap_content"
