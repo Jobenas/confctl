@@ -54,6 +54,8 @@ public class contactActivity extends AppCompatActivity {
 
     String callIp;
 
+    String devIp;
+
     int connected = 0;
 
     private int mInterval = 3000;
@@ -80,6 +82,7 @@ public class contactActivity extends AppCompatActivity {
         sessionId = getIntent().getStringExtra("sessionId");
         acCSRFToken = getIntent().getStringExtra("acCSRFToken");
         connected = parseInt(getIntent().getStringExtra("connected"));
+        devIp = getIntent().getStringExtra("devIp");
 
         try {
             getSiteList();
@@ -93,6 +96,8 @@ public class contactActivity extends AppCompatActivity {
         final ImageButton startCallButton = findViewById(R.id.startCallButton);
         final ImageButton returnContactButton = findViewById(R.id.returnContactButton);
 
+        startCallButton.setEnabled(false);
+
         startCallButton.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View view, MotionEvent motionEvent) {
@@ -100,10 +105,10 @@ public class contactActivity extends AppCompatActivity {
                 {
                     case MotionEvent.ACTION_DOWN:
 
-                        startCallButton.setBackgroundResource(R.drawable.create_pressed);
+                        startCallButton.setImageResource(R.drawable.create_pressed);
                         return true;
                     case MotionEvent.ACTION_UP:
-                        startCallButton.setBackgroundResource(R.drawable.create_normal);
+                        startCallButton.setImageResource(R.drawable.create_normal);
 
                         System.out.println("Number of checked devices: " + indexes.size());
                         if(indexes.size() == 1)
@@ -164,10 +169,10 @@ public class contactActivity extends AppCompatActivity {
                 switch (motionEvent.getAction())
                 {
                     case MotionEvent.ACTION_DOWN:
-                        returnContactButton.setBackgroundResource(R.drawable.b14p);
+                        returnContactButton.setImageResource(R.drawable.b14p);
                         return true;
                     case MotionEvent.ACTION_UP:
-                        returnContactButton.setBackgroundResource(R.drawable.b14);
+                        returnContactButton.setImageResource(R.drawable.b14);
 
                         stopRepeatingTask();
 
@@ -179,6 +184,7 @@ public class contactActivity extends AppCompatActivity {
                         intent.putExtra("sessionId", sessionId);
                         intent.putExtra("acCSRFToken", acCSRFToken);
                         intent.putExtra("presentation", "false");
+                        intent.putExtra("devIp", devIp);
                         if(connected == 0)
                         {
                             intent.putExtra("connected", "0");
@@ -444,6 +450,19 @@ public class contactActivity extends AppCompatActivity {
                                             {
                                                 indexes.remove(currentId);
                                             }
+
+                                            if (indexes.size() > 0)
+                                            {
+                                                final ImageButton startCallButton = findViewById(R.id.startCallButton);
+                                                startCallButton.setEnabled(true);
+                                                startCallButton.setImageResource(R.drawable.create_normal);
+                                            }
+                                            else
+                                            {
+                                                final ImageButton startCallButton = findViewById(R.id.startCallButton);
+                                                startCallButton.setEnabled(false);
+                                                startCallButton.setImageResource(R.drawable.confcreate_normal);
+                                            }
                                         }
                                     });
 
@@ -634,6 +653,7 @@ public class contactActivity extends AppCompatActivity {
                                 intent.putExtra("acCSRFToken", acCSRFToken);
                                 intent.putExtra("type", "call");
                                 intent.putExtra("presentation", "false");
+                                intent.putExtra("devIp", devIp);
                                 if(connected == 0)
                                 {
                                     intent.putExtra("connected", "0");
@@ -757,6 +777,7 @@ public class contactActivity extends AppCompatActivity {
                                 intent.putExtra("acCSRFToken", acCSRFToken);
                                 intent.putExtra("type", "conference");
                                 intent.putExtra("presentation", "false");
+                                intent.putExtra("devIp", devIp);
 
                                 startActivity(intent);
                             }

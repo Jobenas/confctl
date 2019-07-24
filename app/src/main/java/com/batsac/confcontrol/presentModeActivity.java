@@ -36,6 +36,8 @@ public class presentModeActivity extends AppCompatActivity {
     String pwd;
     String ipAddress;
 
+    String devIp;
+
     int connected = 0;
 
     public String sessionId;
@@ -58,6 +60,7 @@ public class presentModeActivity extends AppCompatActivity {
         sessionId = getIntent().getStringExtra("sessionId");
         acCSRFToken = getIntent().getStringExtra("acCSRFToken");
         connected = parseInt(getIntent().getStringExtra("connected"));
+        devIp = getIntent().getStringExtra("devIp");
 
         final ImageButton presentationButton = findViewById(R.id.presentationButton);
         final ImageButton returnContactButton = findViewById(R.id.backButton);
@@ -68,10 +71,10 @@ public class presentModeActivity extends AppCompatActivity {
                 switch (motionEvent.getAction())
                 {
                     case MotionEvent.ACTION_DOWN:
-                        presentationButton.setBackgroundResource(R.drawable.contentsend_pressed);
+                        presentationButton.setImageResource(R.drawable.contentsend_pressed);
                         return true;
                     case MotionEvent.ACTION_UP:
-                        presentationButton.setBackgroundResource(R.drawable.contentsend_normal);
+                        presentationButton.setImageResource(R.drawable.contentsend_normal);
 
                         if(connected > 0)
                         {
@@ -88,6 +91,7 @@ public class presentModeActivity extends AppCompatActivity {
                                 intent.putExtra("type", "conference");
                                 intent.putExtra("presentation", "true");
                                 intent.putExtra("connected", "1");
+                                intent.putExtra("devIp", devIp);
 
                                 startActivity(intent);
 
@@ -117,10 +121,10 @@ public class presentModeActivity extends AppCompatActivity {
                 switch (motionEvent.getAction())
                 {
                     case MotionEvent.ACTION_DOWN:
-                        returnContactButton.setBackgroundResource(R.drawable.contentsend_pressed);
+                        returnContactButton.setImageResource(R.drawable.b14p);
                         return true;
                     case MotionEvent.ACTION_UP:
-                        returnContactButton.setBackgroundResource(R.drawable.contentsend_normal);
+                        returnContactButton.setImageResource(R.drawable.b14);
 
                         stopRepeatingTask();
 
@@ -131,6 +135,7 @@ public class presentModeActivity extends AppCompatActivity {
                         intent.putExtra("ipAddress", ipAddress);
                         intent.putExtra("sessionId", sessionId);
                         intent.putExtra("acCSRFToken", acCSRFToken);
+                        intent.putExtra("devIp", devIp);
                         if(connected == 0)
                         {
                             intent.putExtra("connected", "0");

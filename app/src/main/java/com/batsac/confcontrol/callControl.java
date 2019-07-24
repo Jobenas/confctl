@@ -40,6 +40,7 @@ public class callControl extends AppCompatActivity {
     String acCSRFToken;
 
     String callType;
+    String devIp;
 
     String presentation;
 
@@ -64,6 +65,7 @@ public class callControl extends AppCompatActivity {
         callType = getIntent().getStringExtra("type");
         connected = parseInt(getIntent().getStringExtra("connected"));
         presentation = getIntent().getStringExtra("presentation");
+        devIp = getIntent().getStringExtra("devIp");
 
         System.out.println("Got call type: " + callType);
 
@@ -75,7 +77,7 @@ public class callControl extends AppCompatActivity {
 
         if(presentation.equals("true"))
         {
-            sendContentButton.setEnabled(false);
+            sendContentButton.setImageResource(R.drawable.end_normal);
         }
 
         camCtrlButton.setOnTouchListener(new View.OnTouchListener() {
@@ -86,12 +88,13 @@ public class callControl extends AppCompatActivity {
                 {
                     case MotionEvent.ACTION_DOWN:
 
-                        camCtrlButton.setBackgroundResource(R.drawable.camctl_pressed);
+                        camCtrlButton.setImageResource(R.drawable.camctl_pressed);
+
 
                         return true;
                     case MotionEvent.ACTION_UP:
 
-                        camCtrlButton.setBackgroundResource(R.drawable.camctrl_normal);
+                        camCtrlButton.setImageResource(R.drawable.camctrl_normal);
 
                         Intent intent = new Intent(getBaseContext(), incomingCallCtrl.class);
                         intent.putExtra("user", user);
@@ -102,6 +105,7 @@ public class callControl extends AppCompatActivity {
                         intent.putExtra("connected", "1");
                         intent.putExtra("presentation", presentation);
                         intent.putExtra("type", callType);
+                        intent.putExtra("devIp", devIp);
 
                         startActivity(intent);
 
@@ -119,12 +123,30 @@ public class callControl extends AppCompatActivity {
                 {
                     case MotionEvent.ACTION_DOWN:
 
-                        sendContentButton.setBackgroundResource(R.drawable.contentsend_pressed);
+                        if(presentation.equals("true"))
+                        {
+                            sendContentButton.setImageResource(R.drawable.end_pressed);
+                        }
+                        else
+                        {
+                            sendContentButton.setImageResource(R.drawable.contentsend_pressed);
+                        }
+
 
                         return true;
                     case MotionEvent.ACTION_UP:
 
-                        sendContentButton.setBackgroundResource(R.drawable.contentsend_normal);
+                        if(presentation.equals("true"))
+                        {
+                            sendContentButton.setImageResource(R.drawable.contentsend_normal);
+                            presentation = "false";
+                        }
+                        else
+                        {
+                            sendContentButton.setImageResource(R.drawable.end_normal);
+                            presentation = "true";
+                        }
+
 
                         try {
                             emulateRemote(0, 8);
@@ -148,11 +170,11 @@ public class callControl extends AppCompatActivity {
                 switch (motionEvent.getAction())
                 {
                     case MotionEvent.ACTION_DOWN:
-                        disconnectButton.setBackgroundResource(R.drawable.disc_pressed);
+                        disconnectButton.setImageResource(R.drawable.disc_pressed);
 
                         return true;
                     case MotionEvent.ACTION_UP:
-                        disconnectButton.setBackgroundResource(R.drawable.disc_normal);
+                        disconnectButton.setImageResource(R.drawable.disc_normal);
 
                         if(callType.equals("call"))
                         {
@@ -186,31 +208,19 @@ public class callControl extends AppCompatActivity {
                 switch (motionEvent.getAction())
                 {
                     case MotionEvent.ACTION_DOWN:
-                        offButton.setBackgroundResource(R.drawable.off_pressed);
+                        offButton.setImageResource(R.drawable.off_pressed);
 
                         return true;
                     case MotionEvent.ACTION_UP:
-                        offButton.setBackgroundResource(R.drawable.off_normal);
+                        offButton.setImageResource(R.drawable.off_normal);
 
-                        stopRepeatingTask();
-                        connected = 0;
+
                         try
                         {
                             startTermSleep();
                         } catch (IOException e) {
                             e.printStackTrace();
                         }
-
-                        Intent intent = new Intent(getBaseContext(), MainActivity.class);
-                        intent.putExtra("user", user);
-                        intent.putExtra("pwd", pwd);
-                        intent.putExtra("ipAddress", ipAddress);
-                        intent.putExtra("sessionId", sessionId);
-                        intent.putExtra("acCSRFToken", acCSRFToken);
-                        intent.putExtra("connected", "0");
-
-                        startActivity(intent);
-
                         return true;
                 }
 
@@ -724,7 +734,20 @@ public class callControl extends AppCompatActivity {
                                 Toast toast = Toast.makeText(context, toastText, duration);
                                 toast.show();
 
-                                Intent intent = new Intent(getBaseContext(), welcomeMsg.class);
+                                stopRepeatingTask();
+                                connected = 0;
+
+                                sendSamsungToggleCmd();
+
+                                Intent intent = new Intent(getBaseContext(), MainActivity.class);
+                                intent.putExtra("user", user);
+                                intent.putExtra("pwd", pwd);
+                                intent.putExtra("ipAddress", ipAddress);
+                                intent.putExtra("sessionId", sessionId);
+                                intent.putExtra("acCSRFToken", acCSRFToken);
+                                intent.putExtra("connected", "0");
+                                intent.putExtra("devIp", devIp);
+
                                 startActivity(intent);
                             }
 
@@ -733,7 +756,58 @@ public class callControl extends AppCompatActivity {
                         catch (JSONException e)
                         {
                             e.printStackTrace();
+                        } catch (IOException e) {
+                            e.printStackTrace();
                         }
+                    }
+                });
+            }
+        });
+    }
+
+
+    void sendSamsungToggleCmd() throws IOException
+    {
+        OkHttpClient client = new OkHttpClient();
+
+
+        Request request = new Request.Builder()
+                .url("http://" + devIp + "/sendCmdSamsung")
+                .get()
+                .addHeader("User-Agent", "PostmanRuntime/7.15.0")
+                .addHeader("Accept", "*/*")
+                .addHeader("Cache-Control", "no-cache")
+                .addHeader("Postman-Token", "01abcca8-681a-4aea-89ca-495078357eaa,949b85be-5518-4d83-856f-3084c2267655")
+                .addHeader("Host", devIp)
+                .addHeader("cookie", "SessionID=s81i01X9410q0eXjjWWi8CKmXyG1mDS")
+                .addHeader("accept-encoding", "gzip, deflate")
+                .addHeader("Connection", "keep-alive")
+                .addHeader("cache-control", "no-cache")
+                .build();
+
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+
+                System.out.println("Something failed, " + e.toString());
+
+                call.cancel();
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                System.out.println("got some response");
+
+                final String myResponse = response.body().string();
+
+                System.out.println(myResponse);
+
+                callControl.this.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+
+                        System.out.println("sent tv command");
+
                     }
                 });
             }

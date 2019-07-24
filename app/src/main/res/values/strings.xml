@@ -33,4 +33,8 @@
     <string name="call_control_string1">Antes de salir de la Sala, por favor</string>
     <string name="call_control_string2">apagar la luz de la sala y</string>
     <string name="call_control_string3">dejar las sillas ordenadas</string>
+    <string name="title_activity_settings_pwd">settingsPwdActivity</string>
+    <string name="pwd_title_string">Por Favor ingresar su contraseña</string>
+    <string name="input_pwd_button_string">Ingresar</string>
+    <string name="pwd_back_button_string">Regresar</string>
 </resources>

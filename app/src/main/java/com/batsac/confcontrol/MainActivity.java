@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.media.Image;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.design.widget.FloatingActionButton;
@@ -28,6 +29,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.net.UnknownHostException;
 import java.util.List;
 
 import org.json.JSONArray;
@@ -44,6 +46,13 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.PrintWriter;
+
+import java.net.Socket;
 
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -74,6 +83,11 @@ public class MainActivity extends AppCompatActivity {
     private int mInterval = 3000;
     private Handler mHandler;
 
+    public String settingsPwd;
+
+    String devIp;
+    int devPort = 4998;
+
     @SuppressLint("ClickableViewAccessibility")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -98,11 +112,11 @@ public class MainActivity extends AppCompatActivity {
                 switch(motionEvent.getAction())
                 {
                     case MotionEvent.ACTION_DOWN:
-                        presentationButton.setBackgroundResource(R.drawable.present_pressed);
+                        presentationButton.setImageResource(R.drawable.present_pressed);
 
                         return true;
                     case MotionEvent.ACTION_UP:
-                        presentationButton.setBackgroundResource(R.drawable.present_normal);
+                        presentationButton.setImageResource(R.drawable.present_normal);
 
                         buttonPressed = "presentation";
 
@@ -125,10 +139,10 @@ public class MainActivity extends AppCompatActivity {
                 switch (motionEvent.getAction())
                 {
                     case MotionEvent.ACTION_DOWN:
-                        videoConfButton.setBackgroundResource(R.drawable.videoconf_pressed);
+                        videoConfButton.setImageResource(R.drawable.videoconf_pressed);
                         return true;
                     case MotionEvent.ACTION_UP:
-                        videoConfButton.setBackgroundResource(R.drawable.videoconf_normal);
+                        videoConfButton.setImageResource(R.drawable.videoconf_normal);
 
                         buttonPressed = "videoconf";
 
@@ -151,13 +165,15 @@ public class MainActivity extends AppCompatActivity {
                 switch (motionEvent.getAction())
                 {
                     case MotionEvent.ACTION_DOWN:
-                        settingsButton.setBackgroundResource(R.drawable.b17p);
+                        settingsButton.setImageResource(R.drawable.b17p);
 
                         return true;
                     case MotionEvent.ACTION_UP:
-                        settingsButton.setBackgroundResource(R.drawable.b17);
+                        settingsButton.setImageResource(R.drawable.b17);
 
-                        Intent intent = new Intent(getBaseContext(), settingsActivity.class);
+//                        Intent intent = new Intent(getBaseContext(), settingsActivity.class);
+                        Intent intent = new Intent(getBaseContext(), settingsPwdActivity.class);
+                        intent.putExtra("settingsPwd", settingsPwd);
                         startActivity(intent);
 
                         return true;
@@ -230,6 +246,14 @@ public class MainActivity extends AppCompatActivity {
                     {
                         ipAddress = line;
                     }
+                    else if(lineCounter == 3)
+                    {
+                        devIp = line;
+                    }
+                    else if(lineCounter == 4)
+                    {
+                        settingsPwd = line;
+                    }
                     lineCounter += 1;
                 }
 
@@ -238,16 +262,33 @@ public class MainActivity extends AppCompatActivity {
                     user = "";
                     pwd = "";
                     ipAddress = "";
+                    devIp = "";
+                    settingsPwd = "0410";
                 }
                 else if(lineCounter == 1)
                 {
                     pwd = "";
                     ipAddress = "";
+                    devIp = "";
+                    settingsPwd = "0410";
                 }
                 else if(lineCounter == 2)
                 {
                     ipAddress = "";
+                    devIp = "";
+                    settingsPwd = "0410";
                 }
+                else if(lineCounter == 3)
+                {
+                    devIp = "";
+                    settingsPwd = "0410";
+                }
+                else if(lineCounter == 4)
+                {
+                    settingsPwd = "0410";
+                }
+
+                System.out.println(settingsPwd);
 
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
@@ -259,6 +300,9 @@ public class MainActivity extends AppCompatActivity {
 
     void connectToVC() throws IOException
     {
+
+        System.out.println("Starting connection procedure");
+
         OkHttpClient client = new OkHttpClient();
 
         RequestBody requestBody = RequestBody.create(null, new byte[0]);
@@ -411,6 +455,7 @@ public class MainActivity extends AppCompatActivity {
 
                             if (status == 0)
                             {
+                                System.out.println("got this: " + myResponse);
                                 toastText = "Error al autenticar el dispositivo";
 
                                 Context context = getApplicationContext();
@@ -431,8 +476,6 @@ public class MainActivity extends AppCompatActivity {
 
                                 changeSessionId();
                             }
-
-
                         }
                         catch (JSONException e)
                         {
@@ -500,12 +543,7 @@ public class MainActivity extends AppCompatActivity {
 
                             String toastText = "";
 
-                            if (status == 0)
-                            {
-                                toastText = "Error al cambiar ID de sesión";
-                            }
-                            else
-                            {
+                                                  {
                                 String cookieLongText = responseCookies.get(0);
                                 String[] stringSplit = cookieLongText.split(";");
                                 String newSessionId = stringSplit[0].split("=")[1];
@@ -525,6 +563,8 @@ public class MainActivity extends AppCompatActivity {
                             Toast toast = Toast.makeText(context, toastText, duration);
                             toast.show();
 
+                            sendSamsungToggleCmd();
+
                             if (buttonPressed.equals("presentation"))
                             {
                                 Intent intent = new Intent(getBaseContext(), presentModeActivity.class);
@@ -534,6 +574,7 @@ public class MainActivity extends AppCompatActivity {
                                 intent.putExtra("sessionId", sessionId);
                                 intent.putExtra("acCSRFToken", acCSRFToken);
                                 intent.putExtra("connected", "1");
+                                intent.putExtra("devIp", devIp);
 
                                 startActivity(intent);
                             }
@@ -546,6 +587,7 @@ public class MainActivity extends AppCompatActivity {
                                 intent.putExtra("sessionId", sessionId);
                                 intent.putExtra("acCSRFToken", acCSRFToken);
                                 intent.putExtra("connected", "1");
+                                intent.putExtra("devIp", devIp);
 
                                 startActivity(intent);
                             }
@@ -553,10 +595,62 @@ public class MainActivity extends AppCompatActivity {
                         catch (JSONException e)
                         {
                             e.printStackTrace();
+                        } catch (IOException e) {
+                            e.printStackTrace();
                         }
                     }
                 });
             }
         });
     }
+
+    void sendSamsungToggleCmd() throws IOException
+    {
+        OkHttpClient client = new OkHttpClient();
+
+
+        Request request = new Request.Builder()
+                .url("http://" + devIp + "/sendCmdSamsung")
+                .get()
+                .addHeader("User-Agent", "PostmanRuntime/7.15.0")
+                .addHeader("Accept", "*/*")
+                .addHeader("Cache-Control", "no-cache")
+                .addHeader("Postman-Token", "01abcca8-681a-4aea-89ca-495078357eaa,949b85be-5518-4d83-856f-3084c2267655")
+                .addHeader("Host", devIp)
+                .addHeader("cookie", "SessionID=s81i01X9410q0eXjjWWi8CKmXyG1mDS")
+                .addHeader("accept-encoding", "gzip, deflate")
+                .addHeader("Connection", "keep-alive")
+                .addHeader("cache-control", "no-cache")
+                .build();
+
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+
+                System.out.println("Something failed, " + e.toString());
+
+                call.cancel();
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                System.out.println("got some response");
+
+                final String myResponse = response.body().string();
+
+                System.out.println(myResponse);
+
+                MainActivity.this.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+
+                        System.out.println("sent tv command");
+
+                    }
+                });
+            }
+        });
+    }
+
 }
+

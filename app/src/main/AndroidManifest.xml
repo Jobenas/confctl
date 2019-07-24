@@ -12,16 +12,20 @@
         android:theme="@style/AppTheme"
         tools:ignore="GoogleAppIndexingWarning">
         <activity
+            android:name=".settingsPwdActivity"
+            android:label="@string/title_activity_settings_pwd"
+            android:screenOrientation="landscape"
+            android:theme="@style/AppTheme.NoActionBar"></activity>
+        <activity
             android:name=".presentModeActivity"
             android:label="@string/title_activity_present_mode"
-            android:theme="@style/AppTheme.NoActionBar"
-            android:screenOrientation="landscape"/>
+            android:screenOrientation="landscape"
+            android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".welcomeMsg"
             android:label="@string/title_activity_welcome_msg"
             android:screenOrientation="landscape"
-            android:theme="@style/AppTheme.NoActionBar">
-        </activity>
+            android:theme="@style/AppTheme.NoActionBar"></activity>
         <activity
             android:name=".incomingCallCtrl"
             android:label="@string/title_activity_incoming_call_ctrl"
