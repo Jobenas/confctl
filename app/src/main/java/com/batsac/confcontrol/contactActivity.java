@@ -461,7 +461,7 @@ public class contactActivity extends AppCompatActivity {
                                             {
                                                 final ImageButton startCallButton = findViewById(R.id.startCallButton);
                                                 startCallButton.setEnabled(false);
-                                                startCallButton.setImageResource(R.drawable.confcreate_normal);
+                                                startCallButton.setImageResource(R.drawable.createconf_blocked);
                                             }
                                         }
                                     });

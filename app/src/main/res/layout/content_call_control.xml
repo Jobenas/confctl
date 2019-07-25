@@ -72,7 +72,7 @@
             android:id="@+id/disconnectButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@drawable/disc_normal"
+            android:src="@drawable/endconf_normal"
             android:background="@android:color/black"/>
 
         <ImageButton

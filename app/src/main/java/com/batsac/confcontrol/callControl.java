@@ -77,7 +77,7 @@ public class callControl extends AppCompatActivity {
 
         if(presentation.equals("true"))
         {
-            sendContentButton.setImageResource(R.drawable.end_normal);
+            sendContentButton.setImageResource(R.drawable.cutcontent_normal);
         }
 
         camCtrlButton.setOnTouchListener(new View.OnTouchListener() {
@@ -125,7 +125,7 @@ public class callControl extends AppCompatActivity {
 
                         if(presentation.equals("true"))
                         {
-                            sendContentButton.setImageResource(R.drawable.end_pressed);
+                            sendContentButton.setImageResource(R.drawable.cutcontent_pressed);
                         }
                         else
                         {
@@ -143,7 +143,7 @@ public class callControl extends AppCompatActivity {
                         }
                         else
                         {
-                            sendContentButton.setImageResource(R.drawable.end_normal);
+                            sendContentButton.setImageResource(R.drawable.cutcontent_normal);
                             presentation = "true";
                         }
 
@@ -170,11 +170,11 @@ public class callControl extends AppCompatActivity {
                 switch (motionEvent.getAction())
                 {
                     case MotionEvent.ACTION_DOWN:
-                        disconnectButton.setImageResource(R.drawable.disc_pressed);
+                        disconnectButton.setImageResource(R.drawable.endconf_pressed);
 
                         return true;
                     case MotionEvent.ACTION_UP:
-                        disconnectButton.setImageResource(R.drawable.disc_normal);
+                        disconnectButton.setImageResource(R.drawable.endconf_normal);
 
                         if(callType.equals("call"))
                         {
