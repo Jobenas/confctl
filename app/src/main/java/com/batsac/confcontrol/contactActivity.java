@@ -778,6 +778,14 @@ public class contactActivity extends AppCompatActivity {
                                 intent.putExtra("type", "conference");
                                 intent.putExtra("presentation", "false");
                                 intent.putExtra("devIp", devIp);
+                                if(connected == 0)
+                                {
+                                    intent.putExtra("connected", "0");
+                                }
+                                else if(connected == 1)
+                                {
+                                    intent.putExtra("connected", "1");
+                                }
 
                                 startActivity(intent);
                             }
