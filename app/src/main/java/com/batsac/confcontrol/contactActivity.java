@@ -174,27 +174,11 @@ public class contactActivity extends AppCompatActivity {
                     case MotionEvent.ACTION_UP:
                         returnContactButton.setImageResource(R.drawable.b14);
 
-                        stopRepeatingTask();
-
-                        Intent intent = new Intent(getBaseContext(), MainActivity.class);
-
-                        intent.putExtra("user", user);
-                        intent.putExtra("pwd", pwd);
-                        intent.putExtra("ipAddress", ipAddress);
-                        intent.putExtra("sessionId", sessionId);
-                        intent.putExtra("acCSRFToken", acCSRFToken);
-                        intent.putExtra("presentation", "false");
-                        intent.putExtra("devIp", devIp);
-                        if(connected == 0)
-                        {
-                            intent.putExtra("connected", "0");
+                        try {
+                            startTermSleep();
+                        } catch (IOException e) {
+                            e.printStackTrace();
                         }
-                        else if(connected == 1)
-                        {
-                            intent.putExtra("connected", "1");
-                        }
-
-                        startActivity(intent);
 
                         return true;
                 }
@@ -426,6 +410,7 @@ public class contactActivity extends AppCompatActivity {
                                     TextView c1 = new TextView(contactActivity.this);
                                     c1.setText(nameList.get(i));
                                     c1.setTextColor(Color.WHITE);
+                                    c1.setTextSize(24);
 //                                    TextView c2 = new TextView(contactActivity.this);
 //                                    c2.setText(ipList.get(i));
 //                                    c2.setTextColor(Color.WHITE);
@@ -434,8 +419,8 @@ public class contactActivity extends AppCompatActivity {
 //                                    c3.setTextColor(Color.WHITE);
                                     CheckBox c4 = new CheckBox(contactActivity.this);
                                     c4.setId(i);
-                                    c4.setBackgroundColor(Color.WHITE);
-                                    c4.setHighlightColor(Color.WHITE);
+//                                    c4.setBackgroundColor(Color.WHITE);
+//                                    c4.setHighlightColor(Color.WHITE);
 
                                     final int currentId = i;
 
@@ -796,6 +781,235 @@ public class contactActivity extends AppCompatActivity {
                         {
                             e.printStackTrace();
                         }
+                    }
+                });
+            }
+        });
+    }
+
+    void startTermSleep() throws IOException
+    {
+        OkHttpClient client = new OkHttpClient();
+
+        MediaType mediaType = MediaType.parse("application/json");
+        RequestBody body = RequestBody.create(mediaType, "{\n\t\"acCSRFToken\": \"" + acCSRFToken + "\"\n}");
+        Request request = new Request.Builder()
+                .url("http://" + ipAddress +"/action.cgi?ActionID=WEB_StartTermSleepAPI")
+                .post(body)
+                .addHeader("userType", "web")
+                .addHeader("Cookie", "SessionID=" + sessionId)
+                .addHeader("Content-Type", "application/json")
+                .addHeader("User-Agent", "PostmanRuntime/7.15.0")
+                .addHeader("Accept", "*/*")
+                .addHeader("Cache-Control", "no-cache")
+                .addHeader("Postman-Token", "e449a3a9-2470-4311-a425-981e723d5975,cf569ba5-8698-43b9-96df-2b8ef9485106")
+                .addHeader("Host", ipAddress)
+                .addHeader("accept-encoding", "gzip, deflate")
+                .addHeader("content-length", "53")
+                .addHeader("Connection", "keep-alive")
+                .addHeader("cache-control", "no-cache")
+                .build();
+
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+
+                System.out.println("Something failed, " + e.toString());
+
+                call.cancel();
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+//                System.out.println("got some response");
+
+                final String myResponse = response.body().string();
+
+                contactActivity.this.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+
+                        try
+                        {
+                            JSONObject json = new JSONObject(myResponse);
+
+                            int status = json.getInt("success");
+
+                            String toastText = "";
+
+                            if (status == 0)
+                            {
+                                toastText = "Error al intentar desconectar el equipo";
+
+                                Context context = getApplicationContext();
+                                int duration = Toast.LENGTH_SHORT;
+
+                                Toast toast = Toast.makeText(context, toastText, duration);
+                                toast.show();
+                            }
+                            else
+                            {
+                                logoutAPI();
+                            }
+
+
+                        }
+                        catch (JSONException e)
+                        {
+                            e.printStackTrace();
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                });
+            }
+        });
+    }
+
+    void logoutAPI() throws IOException
+    {
+        OkHttpClient client = new OkHttpClient();
+
+        MediaType mediaType = MediaType.parse("application/json");
+        RequestBody body = RequestBody.create(mediaType, "{\n\t\"acCSRFToken\": \"" + acCSRFToken + "\"\n}");
+        Request request = new Request.Builder()
+                .url("http://" + ipAddress + "/action.cgi?ActionID=WEB_LogOutAPI")
+                .post(body)
+                .addHeader("userType", "web")
+                .addHeader("Cookie", "SessionID=" + sessionId)
+                .addHeader("Content-Type", "application/json")
+                .addHeader("User-Agent", "PostmanRuntime/7.15.0")
+                .addHeader("Accept", "*/*")
+                .addHeader("Cache-Control", "no-cache")
+                .addHeader("Postman-Token", "e449a3a9-2470-4311-a425-981e723d5975,cf569ba5-8698-43b9-96df-2b8ef9485106")
+                .addHeader("Host", ipAddress)
+                .addHeader("accept-encoding", "gzip, deflate")
+                .addHeader("content-length", "53")
+                .addHeader("Connection", "keep-alive")
+                .addHeader("cache-control", "no-cache")
+                .build();
+
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+
+                System.out.println("Something failed, " + e.toString());
+
+                call.cancel();
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+//                System.out.println("got some response");
+
+                final String myResponse = response.body().string();
+
+                contactActivity.this.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+
+                        try
+                        {
+                            JSONObject json = new JSONObject(myResponse);
+
+                            int status = json.getInt("success");
+
+                            String toastText = "";
+
+                            if (status == 0)
+                            {
+                                toastText = "Error al intentar salir de sesiónn";
+
+                                Context context = getApplicationContext();
+                                int duration = Toast.LENGTH_SHORT;
+
+                                Toast toast = Toast.makeText(context, toastText, duration);
+                                toast.show();
+                            }
+                            else
+                            {
+//                                System.out.println(myResponse);
+                                toastText = "Desconexión al equipo completa";
+
+                                Context context = getApplicationContext();
+                                int duration = Toast.LENGTH_SHORT;
+
+                                Toast toast = Toast.makeText(context, toastText, duration);
+                                toast.show();
+
+                                stopRepeatingTask();
+                                connected = 0;
+
+                                sendSamsungToggleCmd();
+
+                                Intent intent = new Intent(getBaseContext(), MainActivity.class);
+                                intent.putExtra("user", user);
+                                intent.putExtra("pwd", pwd);
+                                intent.putExtra("ipAddress", ipAddress);
+                                intent.putExtra("sessionId", sessionId);
+                                intent.putExtra("acCSRFToken", acCSRFToken);
+                                intent.putExtra("connected", "0");
+                                intent.putExtra("devIp", devIp);
+
+                                startActivity(intent);
+                            }
+
+
+                        }
+                        catch (JSONException e)
+                        {
+                            e.printStackTrace();
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                });
+            }
+        });
+    }
+
+    void sendSamsungToggleCmd() throws IOException
+    {
+        OkHttpClient client = new OkHttpClient();
+
+
+        Request request = new Request.Builder()
+                .url("http://" + devIp + "/sendCmdSamsung")
+                .get()
+                .addHeader("User-Agent", "PostmanRuntime/7.15.0")
+                .addHeader("Accept", "*/*")
+                .addHeader("Cache-Control", "no-cache")
+                .addHeader("Postman-Token", "01abcca8-681a-4aea-89ca-495078357eaa,949b85be-5518-4d83-856f-3084c2267655")
+                .addHeader("Host", devIp)
+                .addHeader("cookie", "SessionID=s81i01X9410q0eXjjWWi8CKmXyG1mDS")
+                .addHeader("accept-encoding", "gzip, deflate")
+                .addHeader("Connection", "keep-alive")
+                .addHeader("cache-control", "no-cache")
+                .build();
+
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+
+                System.out.println("Something failed, " + e.toString());
+
+                call.cancel();
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                System.out.println("got some response");
+
+                final String myResponse = response.body().string();
+
+                System.out.println(myResponse);
+
+                contactActivity.this.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+
+                        System.out.println("sent tv command");
+
                     }
                 });
             }

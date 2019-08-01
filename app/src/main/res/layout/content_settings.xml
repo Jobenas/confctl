@@ -4,7 +4,8 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:padding="16dp"
-    android:background="@android:color/black">
+    android:background="#2a2a2a"
+    android:gravity="center">
 
     <TextView
         android:id="@+id/contact_form_title"
@@ -21,10 +22,16 @@
 
 
     <LinearLayout
-        android:layout_width="fill_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:layout_marginTop="20dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Usuario"
+            android:textColor="@android:color/white"/>
 
         <EditText
             android:layout_width="253dp"
@@ -32,14 +39,22 @@
             android:id="@+id/userEdit"
             android:hint="Por favor ingrese el Usuario"
             android:inputType="text"
-            android:background="@android:color/white"/>
+            android:background="@android:color/white"
+            android:layout_marginLeft="10dp"
+            android:layout_marginStart="10dp"/>
     </LinearLayout>
 
     <LinearLayout
-        android:layout_width="fill_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:layout_marginTop="20dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Clave"
+            android:textColor="@android:color/white"/>
 
         <EditText
             android:layout_width="253dp"
@@ -47,14 +62,22 @@
             android:id="@+id/pwdEdit"
             android:hint="Por favor ingrese la Clave"
             android:inputType="textPassword"
-            android:background="@android:color/white"/>
+            android:background="@android:color/white"
+            android:layout_marginLeft="10dp"
+            android:layout_marginStart="10dp"/>
     </LinearLayout>
 
     <LinearLayout
-        android:layout_width="fill_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:layout_marginTop="20dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="IP Videoconf."
+            android:textColor="@android:color/white"/>
 
         <EditText
             android:layout_width="261dp"
@@ -63,14 +86,22 @@
             android:id="@+id/ipEdittext"
             android:hint="Por favor ingrese la IP"
             android:inputType="phone"
-            android:background="@android:color/white"/>
+            android:background="@android:color/white"
+            android:layout_marginLeft="10dp"
+            android:layout_marginStart="10dp"/>
     </LinearLayout>
 
     <LinearLayout
-        android:layout_width="fill_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:layout_marginTop="20dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="IP Equipo Control"
+            android:textColor="@android:color/white"/>
 
         <EditText
             android:layout_width="261dp"
@@ -79,14 +110,22 @@
             android:id="@+id/devIpEdit"
             android:hint="Por favor ingrese la IP del dispositivo de control"
             android:inputType="phone"
-            android:background="@android:color/white"/>
+            android:background="@android:color/white"
+            android:layout_marginLeft="10dp"
+            android:layout_marginStart="10dp"/>
     </LinearLayout>
 
     <LinearLayout
-        android:layout_width="fill_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:layout_marginTop="20dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Clave de Conf."
+            android:textColor="@android:color/white"/>
 
         <EditText
             android:layout_width="261dp"
@@ -95,11 +134,36 @@
             android:id="@+id/appPwd"
             android:hint="Por favor ingrese la nueva contraseña para la aplicación"
             android:inputType="textPassword"
-            android:background="@android:color/white"/>
+            android:background="@android:color/white"
+            android:layout_marginLeft="10dp"
+            android:layout_marginStart="10dp"/>
     </LinearLayout>
 
     <LinearLayout
-        android:layout_width="fill_parent"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginTop="20dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Nombre de la sala"
+            android:textColor="@android:color/white"/>
+
+        <EditText
+            android:layout_width="261dp"
+            android:layout_height="wrap_content"
+            android:id="@+id/nombreSala"
+            android:hint="Por favor ingrese el nombre de la sala"
+            android:inputType="textPassword"
+            android:background="@android:color/white"
+            android:layout_marginLeft="10dp"
+            android:layout_marginStart="10dp"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:orientation="horizontal"

@@ -5,7 +5,7 @@
     android:orientation="vertical"
     android:gravity="center"
     android:padding="16dp"
-    android:background="@android:color/black"
+    android:background="#2a2a2a"
     >
     <LinearLayout
         android:layout_width="match_parent"
@@ -65,7 +65,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="20dp"
             android:layout_marginLeft="30dp"
-            android:background="@android:color/black"
+            android:background="#2a2a2a"
             android:src="@drawable/contentsend_normal" />
 
     </LinearLayout>
@@ -86,7 +86,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:src="@drawable/b14"
-                android:background="@android:color/black"/>
+                android:background="#2a2a2a"/>
         </LinearLayout>
 
     </LinearLayout>

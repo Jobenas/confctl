@@ -28,6 +28,7 @@ public class settingsActivity extends AppCompatActivity {
     String ipAddress;
     String devIp;
     String settingsPwd;
+    String room;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,6 +42,7 @@ public class settingsActivity extends AppCompatActivity {
         final EditText ipEdit = findViewById(R.id.ipEdittext);
         final EditText devIpEdit = findViewById(R.id.devIpEdit);
         final EditText appPwd = findViewById(R.id.appPwd);
+        final EditText roomEdit = findViewById(R.id.nombreSala);
 
         Button saveButton = findViewById(R.id.saveIPButton);
         Button backButton = findViewById(R.id.backButton);
@@ -81,6 +83,10 @@ public class settingsActivity extends AppCompatActivity {
                     {
                         settingsPwd = line;
                     }
+                    else if(lineCounter == 5)
+                    {
+                        room = line;
+                    }
                     lineCounter += 1;
                 }
 
@@ -91,6 +97,7 @@ public class settingsActivity extends AppCompatActivity {
                     ipAddress = "";
                     devIp = "";
                     settingsPwd = "0410";
+                    room = "";
 
                 }
                 else if(lineCounter == 1)
@@ -99,21 +106,29 @@ public class settingsActivity extends AppCompatActivity {
                     ipAddress = "";
                     devIp = "";
                     settingsPwd = "0410";
+                    room = "";
                 }
                 else if(lineCounter == 2)
                 {
                     ipAddress = "";
                     devIp = "";
                     settingsPwd = "0410";
+                    room = "";
                 }
                 else if(lineCounter == 3)
                 {
                     devIp = "";
                     settingsPwd = "0410";
+                    room = "";
                 }
                 else if(lineCounter == 4)
                 {
                     settingsPwd = "0410";
+                    room = "";
+                }
+                else if(lineCounter == 5)
+                {
+                    room = "";
                 }
 
                 userEdit.setText(user);
@@ -121,8 +136,7 @@ public class settingsActivity extends AppCompatActivity {
                 ipEdit.setText(ipAddress);
                 devIpEdit.setText(devIp);
                 appPwd.setText(settingsPwd);
-
-
+                roomEdit.setText(room);
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
             } catch (IOException e) {
@@ -138,9 +152,10 @@ public class settingsActivity extends AppCompatActivity {
                 ipAddress = ipEdit.getText().toString();
                 devIp = devIpEdit.getText().toString();
                 settingsPwd = appPwd.getText().toString();
+                room = roomEdit.getText().toString();
 
                 String fileString = user + "\n" + pwd + "\n" + ipAddress + "\n" + devIp + "\n" +
-                        settingsPwd + "\n";
+                        settingsPwd + "\n" + room + "\n";
 
                 System.out.println(fileString);
 

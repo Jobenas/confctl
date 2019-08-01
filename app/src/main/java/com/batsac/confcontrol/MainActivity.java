@@ -18,6 +18,7 @@ import android.view.MenuItem;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import org.json.JSONException;
@@ -70,6 +71,7 @@ public class MainActivity extends AppCompatActivity {
     String user;
     String pwd;
     String ipAddress;
+    String room;
 
     String callIp = "192.168.0.6";
 
@@ -254,6 +256,14 @@ public class MainActivity extends AppCompatActivity {
                     {
                         settingsPwd = line;
                     }
+                    else if(lineCounter == 5)
+                    {
+                        room = line;
+                        TextView roomEdit = findViewById(R.id.textview1);
+                        String fullRoomString = roomEdit.getText().toString();
+                        fullRoomString = fullRoomString + " " + room;
+                        roomEdit.setText(fullRoomString);
+                    }
                     lineCounter += 1;
                 }
 
@@ -405,6 +415,8 @@ public class MainActivity extends AppCompatActivity {
 
         System.out.println("this is the sesion id: " + sessionId);
 
+        System.out.println("credentials = {\n\t\"user\": \"" + user + "\",\n\t\"password\": \"" + pwd + "\"\n}");
+
         MediaType mediaType = MediaType.parse("application/json");
         RequestBody body = RequestBody.create(mediaType, "{\n\t\"user\": \"" + user + "\",\n\t\"password\": \"" + pwd + "\"\n}");
         Request request = new Request.Builder()
@@ -423,6 +435,9 @@ public class MainActivity extends AppCompatActivity {
                 .addHeader("Connection", "keep-alive")
                 .addHeader("cache-control", "no-cache")
                 .build();
+
+        System.out.println(request.headers());
+        System.out.println(request.body());
 
         client.newCall(request).enqueue(new Callback() {
             @Override

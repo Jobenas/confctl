@@ -4,7 +4,7 @@
     android:layout_height="match_parent"
     android:orientation="horizontal"
     android:padding="16dp"
-    android:background="@android:color/black"
+    android:background="#2a2a2a"
     android:gravity="center">
 
     <LinearLayout
@@ -22,7 +22,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:src="@drawable/up_normal"
-                android:background="@android:color/black"/>
+                android:background="#2a2a2a"/>
         </LinearLayout>
 
         <LinearLayout
@@ -36,14 +36,14 @@
                 android:layout_height="match_parent"
                 android:layout_marginTop="3dp"
                 android:src="@drawable/left_normal"
-                android:background="@android:color/black"/>
+                android:background="#2a2a2a"/>
 
             <ImageButton
                 android:id="@+id/rightButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="3dp"
-                android:background="@android:color/black"
+                android:background="#2a2a2a"
                 android:gravity="center"
                 android:src="@drawable/right_normal"
                 android:layout_marginLeft="70dp"
@@ -61,7 +61,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="177dp"
                 android:layout_marginTop="3dp"
-                android:background="@android:color/black"
+                android:background="#2a2a2a"
                 android:gravity="center"
                 android:src="@drawable/down_normal" />
         </LinearLayout>
@@ -77,7 +77,7 @@
             android:id="@+id/backButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:background="@android:color/black"
+            android:background="#2a2a2a"
             android:src="@drawable/b14"
             android:layout_marginLeft="200dp"/>
     </LinearLayout>
