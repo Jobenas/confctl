@@ -73,22 +73,17 @@ public class MainActivity extends AppCompatActivity {
     String ipAddress;
     String room;
 
-    String callIp = "192.168.0.6";
-
     int connected = 0;
 
     public String sessionId;
     public String acCSRFToken;
 
-    public String buttonPressed = "";
+    public String settingsPwd;
+    String devIp;
 
     private int mInterval = 3000;
     private Handler mHandler;
 
-    public String settingsPwd;
-
-    String devIp;
-    int devPort = 4998;
 
     @SuppressLint("ClickableViewAccessibility")
     @Override
@@ -98,14 +93,10 @@ public class MainActivity extends AppCompatActivity {
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        grabSettings();
-
-        Intent intent = getIntent();
-
         final ImageButton presentationButton = findViewById(R.id.presentationButton);
         final ImageButton videoConfButton = findViewById(R.id.videoConfButton);
+        final ImageButton offButton = findViewById(R.id.offButton);
         final ImageButton settingsButton = findViewById(R.id.settingsButton);
-
 
         presentationButton.setOnTouchListener(new View.OnTouchListener() {
             @Override
@@ -120,13 +111,27 @@ public class MainActivity extends AppCompatActivity {
                     case MotionEvent.ACTION_UP:
                         presentationButton.setImageResource(R.drawable.present_normal);
 
-                        buttonPressed = "presentation";
+                        System.out.println("device IP: " + devIp);
 
                         try {
-                            connectToVC();
+                            sendSamsungToggleCmd();
+                            emulateRemote(0,4);
+                            emulateRemote(2,4);
                         } catch (IOException e) {
                             e.printStackTrace();
                         }
+
+                        Intent intent = new Intent(getBaseContext(), presentModeActivity.class);
+                        intent.putExtra("user", user);
+                        intent.putExtra("pwd", pwd);
+                        intent.putExtra("ipAddress", ipAddress);
+                        intent.putExtra("sessionId", sessionId);
+                        intent.putExtra("acCSRFToken", acCSRFToken);
+                        intent.putExtra("connected", "1");
+                        intent.putExtra("devIp", devIp);
+                        intent.putExtra("room", room);
+
+                        startActivity(intent);
 
                         return true;
                 }
@@ -146,16 +151,55 @@ public class MainActivity extends AppCompatActivity {
                     case MotionEvent.ACTION_UP:
                         videoConfButton.setImageResource(R.drawable.videoconf_normal);
 
-                        buttonPressed = "videoconf";
+                        System.out.println("device IP: " + devIp);
 
                         try {
-                            connectToVC();
+                            sendSamsungToggleCmd();
+                            emulateRemote(0,4);
+                            emulateRemote(2,4);
                         } catch (IOException e) {
                             e.printStackTrace();
                         }
 
+                        Intent intent = new Intent(getBaseContext(), contactActivity.class);
+                        intent.putExtra("user", user);
+                        intent.putExtra("pwd", pwd);
+                        intent.putExtra("ipAddress", ipAddress);
+                        intent.putExtra("sessionId", sessionId);
+                        intent.putExtra("acCSRFToken", acCSRFToken);
+                        intent.putExtra("connected", "1");
+                        intent.putExtra("devIp", devIp);
+                        intent.putExtra("room", room);
+
+                        startActivity(intent);
+
                         return true;
                 }
+                return false;
+            }
+        });
+
+        offButton.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View view, MotionEvent motionEvent) {
+
+                switch (motionEvent.getAction())
+                {
+                    case MotionEvent.ACTION_DOWN:
+                        offButton.setImageResource(R.drawable.off_pressed);
+
+                        return true;
+                    case MotionEvent.ACTION_UP:
+                        offButton.setImageResource(R.drawable.off_normal);
+                        try
+                        {
+                            startTermSleep();
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                        return true;
+                }
+
                 return false;
             }
         });
@@ -191,6 +235,162 @@ public class MainActivity extends AppCompatActivity {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_main, menu);
         return true;
+    }
+
+    @Override
+    public void onResume()
+    {
+        super.onResume();
+
+        System.out.println("Got in onResume");
+
+        Intent intent = getIntent();
+
+        Bundle extras = intent.getExtras();
+
+        if (extras != null)
+        {
+            user = getIntent().getStringExtra("user");
+            pwd = getIntent().getStringExtra("pwd");
+            ipAddress = getIntent().getStringExtra("ipAddress");
+            sessionId = getIntent().getStringExtra("sessionId");
+            acCSRFToken = getIntent().getStringExtra("acCSRFToken");
+            connected = parseInt(getIntent().getStringExtra("connected"));
+            devIp = getIntent().getStringExtra("devIp");
+            room = getIntent().getStringExtra("room");
+        }
+        else
+        {
+            grabSettings();
+
+            try {
+                connectToVC();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
+
+        TextView roomEdit = findViewById(R.id.textview1);
+        String fullRoomString = roomEdit.getText().toString();
+        fullRoomString = fullRoomString + " " + room;
+        roomEdit.setText(fullRoomString);
+
+    }
+
+    @Override
+    public void onStop()
+    {
+        super.onStop();
+
+        System.out.println("Got in onStop");
+    }
+
+    Runnable mGetMailboxData  = new Runnable() {
+        @Override
+        public void run() {
+            try
+            {
+                try
+                {
+                    getMailBoxData();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+            finally
+            {
+                mHandler.postDelayed(mGetMailboxData, mInterval);
+            }
+        }
+    };
+
+    void startRepeatingTask()
+    {
+        mGetMailboxData.run();
+    }
+
+    void stopRepeatingTask()
+    {
+        mHandler.removeCallbacks(mGetMailboxData);
+    }
+
+    void getMailBoxData() throws IOException
+    {
+        OkHttpClient client = new OkHttpClient();
+
+        MediaType mediaType = MediaType.parse("application/json");
+        RequestBody body = RequestBody.create(mediaType, "{\n\t\"acCSRFToken\": \"" + acCSRFToken + "\"\n}");
+        Request request = new Request.Builder()
+                .url("http:/" + ipAddress + "/action.cgi?ActionID=WEB_GetMailBoxDataAPI")
+                .post(body)
+                .addHeader("userType", "web")
+                .addHeader("Content-Type", "application/json")
+                .addHeader("Cookie", "SessionID=" + sessionId)
+                .addHeader("User-Agent", "PostmanRuntime/7.13.0")
+                .addHeader("Accept", "*/*")
+                .addHeader("Cache-Control", "no-cache")
+                .addHeader("Postman-Token", "44762c3b-db49-4d5d-ab14-8be92a0b42b1,ac05f67d-ee2f-45ab-a1ac-6b807d4000e7")
+                .addHeader("Host", ipAddress)
+                .addHeader("accept-encoding", "gzip, deflate")
+                .addHeader("content-length", "46")
+                .addHeader("Connection", "keep-alive")
+                .addHeader("cache-control", "no-cache")
+                .build();
+
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+
+                System.out.println("Something failed, " + e.toString());
+
+                call.cancel();
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+//                System.out.println("got some response");
+
+                final String myResponse = response.body().string();
+
+                MainActivity.this.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+
+                        try
+                        {
+                            JSONObject json = new JSONObject(myResponse);
+
+                            int status = json.getInt("success");
+
+                            String toastText = "";
+
+                            if (status == 0)
+                            {
+                                toastText = "Error al autenticar el dispositivo";
+
+                                Context context = getApplicationContext();
+                                int duration = Toast.LENGTH_SHORT;
+
+                                Toast toast = Toast.makeText(context, toastText, duration);
+//                                toast.show();
+                            }
+                            else
+                            {
+//                                System.out.println(myResponse);
+                                String a = "1";
+                            }
+
+
+                        }
+                        catch (JSONException e)
+                        {
+                            e.printStackTrace();
+                        }
+                    }
+                });
+            }
+        });
     }
 
     @Override
@@ -259,10 +459,6 @@ public class MainActivity extends AppCompatActivity {
                     else if(lineCounter == 5)
                     {
                         room = line;
-                        TextView roomEdit = findViewById(R.id.textview1);
-                        String fullRoomString = roomEdit.getText().toString();
-                        fullRoomString = fullRoomString + " " + room;
-                        roomEdit.setText(fullRoomString);
                     }
                     lineCounter += 1;
                 }
@@ -437,7 +633,7 @@ public class MainActivity extends AppCompatActivity {
                 .build();
 
         System.out.println(request.headers());
-        System.out.println(request.body());
+        System.out.println(request.body().toString());
 
         client.newCall(request).enqueue(new Callback() {
             @Override
@@ -570,6 +766,10 @@ public class MainActivity extends AppCompatActivity {
                                 toastText = "Conexion al equipo completa";
 
                                 connected = 1;
+
+                                mHandler = new Handler();
+
+                                startRepeatingTask();
                             }
 
                             Context context = getApplicationContext();
@@ -577,40 +777,9 @@ public class MainActivity extends AppCompatActivity {
 
                             Toast toast = Toast.makeText(context, toastText, duration);
                             toast.show();
-
-                            sendSamsungToggleCmd();
-
-                            if (buttonPressed.equals("presentation"))
-                            {
-                                Intent intent = new Intent(getBaseContext(), presentModeActivity.class);
-                                intent.putExtra("user", user);
-                                intent.putExtra("pwd", pwd);
-                                intent.putExtra("ipAddress", ipAddress);
-                                intent.putExtra("sessionId", sessionId);
-                                intent.putExtra("acCSRFToken", acCSRFToken);
-                                intent.putExtra("connected", "1");
-                                intent.putExtra("devIp", devIp);
-
-                                startActivity(intent);
-                            }
-                            else if(buttonPressed.equals("videoconf"))
-                            {
-                                Intent intent = new Intent(getBaseContext(), contactActivity.class);
-                                intent.putExtra("user", user);
-                                intent.putExtra("pwd", pwd);
-                                intent.putExtra("ipAddress", ipAddress);
-                                intent.putExtra("sessionId", sessionId);
-                                intent.putExtra("acCSRFToken", acCSRFToken);
-                                intent.putExtra("connected", "1");
-                                intent.putExtra("devIp", devIp);
-
-                                startActivity(intent);
-                            }
                         }
                         catch (JSONException e)
                         {
-                            e.printStackTrace();
-                        } catch (IOException e) {
                             e.printStackTrace();
                         }
                     }
@@ -651,9 +820,11 @@ public class MainActivity extends AppCompatActivity {
             public void onResponse(Call call, Response response) throws IOException {
                 System.out.println("got some response");
 
-                final String myResponse = response.body().string();
-
-                System.out.println(myResponse);
+                final String myResponse;
+                if (response.body() != null) {
+                    myResponse = response.body().string();
+                    System.out.println(myResponse);
+                }
 
                 MainActivity.this.runOnUiThread(new Runnable() {
                     @Override
@@ -661,6 +832,167 @@ public class MainActivity extends AppCompatActivity {
 
                         System.out.println("sent tv command");
 
+                    }
+                });
+            }
+        });
+    }
+
+    void emulateRemote(int keyState, int keyCode) throws IOException
+    {
+        OkHttpClient client = new OkHttpClient();
+
+        MediaType mediaType = MediaType.parse("application/json");
+        RequestBody body = RequestBody.create(mediaType, "{\n\t\"keyState\":" + keyState +
+                ",\n\t\"keyCode\":" + keyCode + ",\n\t" +
+                "\"acCSRFToken\":\"" + acCSRFToken + "\"\n}");
+        Request request = new Request.Builder()
+                .url("http://" + ipAddress + "/action.cgi?ActionID=WEB_EmuRemoteKeyAPI")
+                .post(body)
+                .addHeader("userType", "web")
+                .addHeader("Cookie", "SessionID=" + sessionId)
+                .addHeader("Content-Type", "application/json")
+                .addHeader("User-Agent", "PostmanRuntime/7.15.0")
+                .addHeader("Accept", "*/*")
+                .addHeader("Cache-Control", "no-cache")
+                .addHeader("Postman-Token", "c7613bae-2920-4285-a537-5c3efc1e3ac8,73cce5d7-dea2-44da-93a7-20603ac5826b")
+                .addHeader("Host", ipAddress)
+                .addHeader("accept-encoding", "gzip, deflate")
+                .addHeader("content-length", "81")
+                .addHeader("Connection", "keep-alive")
+                .addHeader("cache-control", "no-cache")
+                .build();
+
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+
+                System.out.println("Something failed, " + e.toString());
+
+                call.cancel();
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+//                System.out.println("got some response");
+
+                final String myResponse = response.body().string();
+
+
+
+                MainActivity.this.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+
+                        try
+                        {
+                            JSONObject json = new JSONObject(myResponse);
+
+                            int status = json.getInt("success");
+
+                            String toastText = "";
+
+                            if (status == 0)
+                            {
+                                toastText = "Error al intentar iniciar el modo presentación";
+
+                                Context context = getApplicationContext();
+                                int duration = Toast.LENGTH_SHORT;
+
+                                Toast toast = Toast.makeText(context, toastText, duration);
+                                toast.show();
+                            }
+                            else
+                            {
+//                                System.out.println(myResponse);
+                                String a = "1";
+                            }
+
+
+                        }
+                        catch (JSONException e)
+                        {
+                            e.printStackTrace();
+                        }
+                    }
+                });
+            }
+        });
+    }
+
+    void startTermSleep() throws IOException
+    {
+        OkHttpClient client = new OkHttpClient();
+
+        MediaType mediaType = MediaType.parse("application/json");
+        RequestBody body = RequestBody.create(mediaType, "{\n\t\"acCSRFToken\": \"" + acCSRFToken + "\"\n}");
+        Request request = new Request.Builder()
+                .url("http://" + ipAddress +"/action.cgi?ActionID=WEB_StartTermSleepAPI")
+                .post(body)
+                .addHeader("userType", "web")
+                .addHeader("Cookie", "SessionID=" + sessionId)
+                .addHeader("Content-Type", "application/json")
+                .addHeader("User-Agent", "PostmanRuntime/7.15.0")
+                .addHeader("Accept", "*/*")
+                .addHeader("Cache-Control", "no-cache")
+                .addHeader("Postman-Token", "e449a3a9-2470-4311-a425-981e723d5975,cf569ba5-8698-43b9-96df-2b8ef9485106")
+                .addHeader("Host", ipAddress)
+                .addHeader("accept-encoding", "gzip, deflate")
+                .addHeader("content-length", "53")
+                .addHeader("Connection", "keep-alive")
+                .addHeader("cache-control", "no-cache")
+                .build();
+
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+
+                System.out.println("Something failed, " + e.toString());
+
+                call.cancel();
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+//                System.out.println("got some response");
+
+                final String myResponse = response.body().string();
+
+                MainActivity.this.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+
+                        try
+                        {
+                            JSONObject json = new JSONObject(myResponse);
+
+                            int status = json.getInt("success");
+
+                            String toastText = "";
+
+                            if (status == 0)
+                            {
+                                toastText = "Error al intentar desconectar el equipo";
+
+                                Context context = getApplicationContext();
+                                int duration = Toast.LENGTH_SHORT;
+
+                                Toast toast = Toast.makeText(context, toastText, duration);
+                                toast.show();
+                            }
+                            else
+                            {
+                                sendSamsungToggleCmd();
+                            }
+
+
+                        }
+                        catch (JSONException e)
+                        {
+                            e.printStackTrace();
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
                     }
                 });
             }
