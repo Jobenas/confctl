@@ -279,20 +279,20 @@ public class callControl extends AppCompatActivity {
             }
         }
 
-        Context context = this;
-        File directory = context.getFilesDir();
-        File file = new File(directory, "callType");
-
-        FileInputStream is = null;
-        try {
-            is = new FileInputStream(file);
-            BufferedReader reader = new BufferedReader(new InputStreamReader(is));
-            callType = reader.readLine();
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+//        Context context = this;
+//        File directory = context.getFilesDir();
+//        File file = new File(directory, "callType");
+//
+//        FileInputStream is = null;
+//        try {
+//            is = new FileInputStream(file);
+//            BufferedReader reader = new BufferedReader(new InputStreamReader(is));
+//            callType = reader.readLine();
+//        } catch (FileNotFoundException e) {
+//            e.printStackTrace();
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
     }
 
     @Override
@@ -316,6 +316,12 @@ public class callControl extends AppCompatActivity {
         } catch (IOException e) {
             e.printStackTrace();
         }
+
+//        try {
+//            logoutAPI();
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
     }
 
     Runnable mGetMailboxData  = new Runnable() {
@@ -836,7 +842,7 @@ public class callControl extends AppCompatActivity {
             public void onResponse(Call call, Response response) throws IOException {
                 System.out.println("got some response from hanging up the call");
 
-                final String myResponse = response.body().toString();
+                final String myResponse = response.body().string();
 
                 System.out.println(myResponse);
 
@@ -913,6 +919,8 @@ public class callControl extends AppCompatActivity {
                 .addHeader("Postman-Token", "ca94929c-4547-44a9-bda9-e35dc4fc34e5")
                 .build();
 
+
+
         client.newCall(request).enqueue(new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
@@ -926,7 +934,9 @@ public class callControl extends AppCompatActivity {
             public void onResponse(Call call, Response response) throws IOException {
                 System.out.println("got some response from hanging up the conference");
 
-                final String myResponse = response.body().toString();
+                final String myResponse = response.body().string();
+
+//                final String myResponse =
 
                 System.out.println(myResponse);
 
@@ -1261,8 +1271,6 @@ public class callControl extends AppCompatActivity {
 
             @Override
             public void onResponse(Call call, Response response) throws IOException {
-//                System.out.println("got some response");
-
                 final String myResponse = response.body().string();
 
                 callControl.this.runOnUiThread(new Runnable() {
@@ -1284,43 +1292,27 @@ public class callControl extends AppCompatActivity {
                                 Context context = getApplicationContext();
                                 int duration = Toast.LENGTH_SHORT;
 
-                                Toast toast = Toast.makeText(context, toastText, duration);
-                                toast.show();
+//                                Toast toast = Toast.makeText(context, toastText, duration);
+//                                toast.show();
+                                System.out.println(toastText);
                             }
                             else
                             {
-//                                System.out.println(myResponse);
                                 toastText = "Desconexión al equipo completa";
 
                                 Context context = getApplicationContext();
                                 int duration = Toast.LENGTH_SHORT;
 
-                                Toast toast = Toast.makeText(context, toastText, duration);
-                                toast.show();
+//                                Toast toast = Toast.makeText(context, toastText, duration);
+//                                toast.show();
+                                System.out.println(toastText);
 
                                 stopRepeatingTask();
                                 connected = 0;
-
-                                sendSamsungToggleCmd();
-
-                                Intent intent = new Intent(getBaseContext(), MainActivity.class);
-                                intent.putExtra("user", user);
-                                intent.putExtra("pwd", pwd);
-                                intent.putExtra("ipAddress", ipAddress);
-                                intent.putExtra("sessionId", sessionId);
-                                intent.putExtra("acCSRFToken", acCSRFToken);
-                                intent.putExtra("connected", "0");
-                                intent.putExtra("devIp", devIp);
-
-                                startActivity(intent);
                             }
-
-
                         }
                         catch (JSONException e)
                         {
-                            e.printStackTrace();
-                        } catch (IOException e) {
                             e.printStackTrace();
                         }
                     }

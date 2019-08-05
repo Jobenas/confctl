@@ -310,20 +310,20 @@ public class incomingCallCtrl extends AppCompatActivity {
             }
         }
 
-        Context context = this;
-        File directory = context.getFilesDir();
-        File file = new File(directory, "callType");
-
-        FileInputStream is = null;
-        try {
-            is = new FileInputStream(file);
-            BufferedReader reader = new BufferedReader(new InputStreamReader(is));
-            callType = reader.readLine();
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+//        Context context = this;
+//        File directory = context.getFilesDir();
+//        File file = new File(directory, "callType");
+//
+//        FileInputStream is = null;
+//        try {
+//            is = new FileInputStream(file);
+//            BufferedReader reader = new BufferedReader(new InputStreamReader(is));
+//            callType = reader.readLine();
+//        } catch (FileNotFoundException e) {
+//            e.printStackTrace();
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
     }
 
     @Override
@@ -333,20 +333,26 @@ public class incomingCallCtrl extends AppCompatActivity {
 
         System.out.println("Got in onStop");
 
-        Context context = this;
-        File directory = context.getFilesDir();
-        File file = new File(directory, "callType");
+//        Context context = this;
+//        File directory = context.getFilesDir();
+//        File file = new File(directory, "callType");
+//
+//        FileOutputStream outputStream = null;
+//        try {
+//            outputStream = openFileOutput("callType", Context.MODE_PRIVATE);
+//            outputStream.write(callType.getBytes());
+//            outputStream.close();
+//        } catch (FileNotFoundException e) {
+//            e.printStackTrace();
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
 
-        FileOutputStream outputStream = null;
-        try {
-            outputStream = openFileOutput("callType", Context.MODE_PRIVATE);
-            outputStream.write(callType.getBytes());
-            outputStream.close();
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+//        try {
+//            logoutAPI();
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
     }
 
     void grabSettings()
@@ -829,6 +835,89 @@ public class incomingCallCtrl extends AppCompatActivity {
     }
 
 
+    void logoutAPI() throws IOException
+    {
+        OkHttpClient client = new OkHttpClient();
+
+        MediaType mediaType = MediaType.parse("application/json");
+        RequestBody body = RequestBody.create(mediaType, "{\n\t\"acCSRFToken\": \"" + acCSRFToken + "\"\n}");
+        Request request = new Request.Builder()
+                .url("http://" + ipAddress + "/action.cgi?ActionID=WEB_LogOutAPI")
+                .post(body)
+                .addHeader("userType", "web")
+                .addHeader("Cookie", "SessionID=" + sessionId)
+                .addHeader("Content-Type", "application/json")
+                .addHeader("User-Agent", "PostmanRuntime/7.15.0")
+                .addHeader("Accept", "*/*")
+                .addHeader("Cache-Control", "no-cache")
+                .addHeader("Postman-Token", "e449a3a9-2470-4311-a425-981e723d5975,cf569ba5-8698-43b9-96df-2b8ef9485106")
+                .addHeader("Host", ipAddress)
+                .addHeader("accept-encoding", "gzip, deflate")
+                .addHeader("content-length", "53")
+                .addHeader("Connection", "keep-alive")
+                .addHeader("cache-control", "no-cache")
+                .build();
+
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+
+                System.out.println("Something failed, " + e.toString());
+
+                call.cancel();
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                final String myResponse = response.body().string();
+
+                incomingCallCtrl.this.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+
+                        try
+                        {
+                            JSONObject json = new JSONObject(myResponse);
+
+                            int status = json.getInt("success");
+
+                            String toastText = "";
+
+                            if (status == 0)
+                            {
+                                toastText = "Error al intentar salir de sesiónn";
+
+                                Context context = getApplicationContext();
+                                int duration = Toast.LENGTH_SHORT;
+
+//                                Toast toast = Toast.makeText(context, toastText, duration);
+//                                toast.show();
+                                System.out.println(toastText);
+                            }
+                            else
+                            {
+                                toastText = "Desconexión al equipo completa";
+
+                                Context context = getApplicationContext();
+                                int duration = Toast.LENGTH_SHORT;
+
+//                                Toast toast = Toast.makeText(context, toastText, duration);
+//                                toast.show();
+                                System.out.println(toastText);
+
+                                stopRepeatingTask();
+                                connected = 0;
+                            }
+                        }
+                        catch (JSONException e)
+                        {
+                            e.printStackTrace();
+                        }
+                    }
+                });
+            }
+        });
+    }
 
     void moveCamera(int direction) throws IOException
     {

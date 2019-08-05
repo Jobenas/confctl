@@ -33,6 +33,7 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
+import okio.Buffer;
 
 import static java.lang.Integer.parseInt;
 
@@ -205,6 +206,12 @@ public class presentModeActivity extends AppCompatActivity {
         super.onStop();
 
         System.out.println("Got in onStop");
+
+//        try {
+//            logoutAPI();
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
     }
 
     Runnable mGetMailboxData  = new Runnable() {
@@ -228,6 +235,20 @@ public class presentModeActivity extends AppCompatActivity {
             }
         }
     };
+
+    private static String bodyToString(final Request request)
+    {
+        try
+        {
+            final Request copy = request.newBuilder().build();
+            final Buffer buffer = new Buffer();
+            copy.body().writeTo(buffer);
+            return buffer.readUtf8();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
 
     void grabSettings()
     {
@@ -448,7 +469,8 @@ public class presentModeActivity extends AppCompatActivity {
                 .build();
 
         System.out.println(request.headers());
-        System.out.println(request.body().toString());
+        System.out.println("Body:");
+        System.out.println(bodyToString(request));
 
         client.newCall(request).enqueue(new Callback() {
             @Override
@@ -967,8 +989,6 @@ public class presentModeActivity extends AppCompatActivity {
 
             @Override
             public void onResponse(Call call, Response response) throws IOException {
-//                System.out.println("got some response");
-
                 final String myResponse = response.body().string();
 
                 presentModeActivity.this.runOnUiThread(new Runnable() {
@@ -990,43 +1010,27 @@ public class presentModeActivity extends AppCompatActivity {
                                 Context context = getApplicationContext();
                                 int duration = Toast.LENGTH_SHORT;
 
-                                Toast toast = Toast.makeText(context, toastText, duration);
-                                toast.show();
+//                                Toast toast = Toast.makeText(context, toastText, duration);
+//                                toast.show();
+                                System.out.println(toastText);
                             }
                             else
                             {
-//                                System.out.println(myResponse);
                                 toastText = "Desconexión al equipo completa";
 
                                 Context context = getApplicationContext();
                                 int duration = Toast.LENGTH_SHORT;
 
-                                Toast toast = Toast.makeText(context, toastText, duration);
-                                toast.show();
+//                                Toast toast = Toast.makeText(context, toastText, duration);
+//                                toast.show();
+                                System.out.println(toastText);
 
                                 stopRepeatingTask();
                                 connected = 0;
-
-                                sendSamsungToggleCmd();
-
-                                Intent intent = new Intent(getBaseContext(), MainActivity.class);
-                                intent.putExtra("user", user);
-                                intent.putExtra("pwd", pwd);
-                                intent.putExtra("ipAddress", ipAddress);
-                                intent.putExtra("sessionId", sessionId);
-                                intent.putExtra("acCSRFToken", acCSRFToken);
-                                intent.putExtra("connected", "0");
-                                intent.putExtra("devIp", devIp);
-
-                                startActivity(intent);
                             }
-
-
                         }
                         catch (JSONException e)
                         {
-                            e.printStackTrace();
-                        } catch (IOException e) {
                             e.printStackTrace();
                         }
                     }

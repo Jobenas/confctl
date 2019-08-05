@@ -63,6 +63,7 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
+import okio.Buffer;
 
 import static java.lang.Integer.parseInt;
 
@@ -250,6 +251,7 @@ public class MainActivity extends AppCompatActivity {
 
         if (extras != null)
         {
+            System.out.println("got in the extras");
             user = getIntent().getStringExtra("user");
             pwd = getIntent().getStringExtra("pwd");
             ipAddress = getIntent().getStringExtra("ipAddress");
@@ -284,6 +286,12 @@ public class MainActivity extends AppCompatActivity {
         super.onStop();
 
         System.out.println("Got in onStop");
+
+//        try {
+//            logoutAPI();
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
     }
 
     Runnable mGetMailboxData  = new Runnable() {
@@ -304,6 +312,20 @@ public class MainActivity extends AppCompatActivity {
             }
         }
     };
+
+    private static String bodyToString(final Request request)
+    {
+        try
+        {
+            final Request copy = request.newBuilder().build();
+            final Buffer buffer = new Buffer();
+            copy.body().writeTo(buffer);
+            return buffer.readUtf8();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
 
     void startRepeatingTask()
     {
@@ -633,7 +655,7 @@ public class MainActivity extends AppCompatActivity {
                 .build();
 
         System.out.println(request.headers());
-        System.out.println(request.body().toString());
+        System.out.println(bodyToString(request));
 
         client.newCall(request).enqueue(new Callback() {
             @Override
@@ -991,6 +1013,90 @@ public class MainActivity extends AppCompatActivity {
                         {
                             e.printStackTrace();
                         } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                });
+            }
+        });
+    }
+
+    void logoutAPI() throws IOException
+    {
+        OkHttpClient client = new OkHttpClient();
+
+        MediaType mediaType = MediaType.parse("application/json");
+        RequestBody body = RequestBody.create(mediaType, "{\n\t\"acCSRFToken\": \"" + acCSRFToken + "\"\n}");
+        Request request = new Request.Builder()
+                .url("http://" + ipAddress + "/action.cgi?ActionID=WEB_LogOutAPI")
+                .post(body)
+                .addHeader("userType", "web")
+                .addHeader("Cookie", "SessionID=" + sessionId)
+                .addHeader("Content-Type", "application/json")
+                .addHeader("User-Agent", "PostmanRuntime/7.15.0")
+                .addHeader("Accept", "*/*")
+                .addHeader("Cache-Control", "no-cache")
+                .addHeader("Postman-Token", "e449a3a9-2470-4311-a425-981e723d5975,cf569ba5-8698-43b9-96df-2b8ef9485106")
+                .addHeader("Host", ipAddress)
+                .addHeader("accept-encoding", "gzip, deflate")
+                .addHeader("content-length", "53")
+                .addHeader("Connection", "keep-alive")
+                .addHeader("cache-control", "no-cache")
+                .build();
+
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+
+                System.out.println("Something failed, " + e.toString());
+
+                call.cancel();
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                final String myResponse = response.body().string();
+
+                MainActivity.this.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+
+                        try
+                        {
+                            JSONObject json = new JSONObject(myResponse);
+
+                            int status = json.getInt("success");
+
+                            String toastText = "";
+
+                            if (status == 0)
+                            {
+                                toastText = "Error al intentar salir de sesiónn";
+
+                                Context context = getApplicationContext();
+                                int duration = Toast.LENGTH_SHORT;
+
+//                                Toast toast = Toast.makeText(context, toastText, duration);
+//                                toast.show();
+                                System.out.println(toastText);
+                            }
+                            else
+                            {
+                                toastText = "Desconexión al equipo completa";
+
+                                Context context = getApplicationContext();
+                                int duration = Toast.LENGTH_SHORT;
+
+//                                Toast toast = Toast.makeText(context, toastText, duration);
+//                                toast.show();
+                                System.out.println(toastText);
+
+                                stopRepeatingTask();
+                                connected = 0;
+                            }
+                        }
+                        catch (JSONException e)
+                        {
                             e.printStackTrace();
                         }
                     }

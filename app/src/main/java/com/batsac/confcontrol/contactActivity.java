@@ -241,6 +241,12 @@ public class contactActivity extends AppCompatActivity {
         super.onStop();
 
         System.out.println("Got in onStop");
+
+//        try {
+//            logoutAPI();
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
     }
 
 
@@ -1329,8 +1335,6 @@ public class contactActivity extends AppCompatActivity {
 
             @Override
             public void onResponse(Call call, Response response) throws IOException {
-//                System.out.println("got some response");
-
                 final String myResponse = response.body().string();
 
                 contactActivity.this.runOnUiThread(new Runnable() {
@@ -1352,43 +1356,27 @@ public class contactActivity extends AppCompatActivity {
                                 Context context = getApplicationContext();
                                 int duration = Toast.LENGTH_SHORT;
 
-                                Toast toast = Toast.makeText(context, toastText, duration);
-                                toast.show();
+//                                Toast toast = Toast.makeText(context, toastText, duration);
+//                                toast.show();
+                                System.out.println(toastText);
                             }
                             else
                             {
-//                                System.out.println(myResponse);
                                 toastText = "Desconexión al equipo completa";
 
                                 Context context = getApplicationContext();
                                 int duration = Toast.LENGTH_SHORT;
 
-                                Toast toast = Toast.makeText(context, toastText, duration);
-                                toast.show();
+//                                Toast toast = Toast.makeText(context, toastText, duration);
+//                                toast.show();
+                                System.out.println(toastText);
 
                                 stopRepeatingTask();
                                 connected = 0;
-
-                                sendSamsungToggleCmd();
-
-                                Intent intent = new Intent(getBaseContext(), MainActivity.class);
-                                intent.putExtra("user", user);
-                                intent.putExtra("pwd", pwd);
-                                intent.putExtra("ipAddress", ipAddress);
-                                intent.putExtra("sessionId", sessionId);
-                                intent.putExtra("acCSRFToken", acCSRFToken);
-                                intent.putExtra("connected", "0");
-                                intent.putExtra("devIp", devIp);
-
-                                startActivity(intent);
                             }
-
-
                         }
                         catch (JSONException e)
                         {
-                            e.printStackTrace();
-                        } catch (IOException e) {
                             e.printStackTrace();
                         }
                     }
