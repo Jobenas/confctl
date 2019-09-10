@@ -71,8 +71,9 @@ public class MainActivity extends AppCompatActivity {
 
     String user;
     String pwd;
-    String ipAddress;
+    String ipAddress = "192.168.0.50";
     String room;
+    String tvOption = "Samsung";
 
     int connected = 0;
 
@@ -80,7 +81,7 @@ public class MainActivity extends AppCompatActivity {
     public String acCSRFToken;
 
     public String settingsPwd;
-    String devIp;
+    String devIp = "192.168.0.104";
 
     private int mInterval = 3000;
     private Handler mHandler;
@@ -115,7 +116,7 @@ public class MainActivity extends AppCompatActivity {
                         System.out.println("device IP: " + devIp);
 
                         try {
-                            sendSamsungToggleCmd();
+                            sendTvToggleCmd();
                             emulateRemote(0,4);
                             emulateRemote(2,4);
                         } catch (IOException e) {
@@ -131,6 +132,7 @@ public class MainActivity extends AppCompatActivity {
                         intent.putExtra("connected", "1");
                         intent.putExtra("devIp", devIp);
                         intent.putExtra("room", room);
+                        intent.putExtra("tvOption", tvOption);
 
                         startActivity(intent);
 
@@ -155,7 +157,7 @@ public class MainActivity extends AppCompatActivity {
                         System.out.println("device IP: " + devIp);
 
                         try {
-                            sendSamsungToggleCmd();
+                            sendTvToggleCmd();
                             emulateRemote(0,4);
                             emulateRemote(2,4);
                         } catch (IOException e) {
@@ -171,6 +173,7 @@ public class MainActivity extends AppCompatActivity {
                         intent.putExtra("connected", "1");
                         intent.putExtra("devIp", devIp);
                         intent.putExtra("room", room);
+                        intent.putExtra("tvOption", tvOption);
 
                         startActivity(intent);
 
@@ -249,33 +252,41 @@ public class MainActivity extends AppCompatActivity {
 
         Bundle extras = intent.getExtras();
 
-        if (extras != null)
-        {
-            System.out.println("got in the extras");
-            user = getIntent().getStringExtra("user");
-            pwd = getIntent().getStringExtra("pwd");
-            ipAddress = getIntent().getStringExtra("ipAddress");
-            sessionId = getIntent().getStringExtra("sessionId");
-            acCSRFToken = getIntent().getStringExtra("acCSRFToken");
-            connected = parseInt(getIntent().getStringExtra("connected"));
-            devIp = getIntent().getStringExtra("devIp");
-            room = getIntent().getStringExtra("room");
-        }
-        else
-        {
-            grabSettings();
+//        if (extras != null)
+//        {
+//            System.out.println("got in the extras");
+//            user = getIntent().getStringExtra("user");
+//            pwd = getIntent().getStringExtra("pwd");
+//            ipAddress = getIntent().getStringExtra("ipAddress");
+//            sessionId = getIntent().getStringExtra("sessionId");
+//            acCSRFToken = getIntent().getStringExtra("acCSRFToken");
+//            connected = parseInt(getIntent().getStringExtra("connected"));
+//            devIp = getIntent().getStringExtra("devIp");
+//            room = getIntent().getStringExtra("room");
+//        }
+//        else
+//        {
+//            grabSettings();
+//
+//            try {
+//                connectToVC();
+//            } catch (IOException e) {
+//                e.printStackTrace();
+//            }
+//        }
 
-            try {
-                connectToVC();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
+        grabSettings();
 
+        try {
+            connectToVC();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
         TextView roomEdit = findViewById(R.id.textview1);
-        String fullRoomString = roomEdit.getText().toString();
-        fullRoomString = fullRoomString + " " + room;
+//        String fullRoomString = roomEdit.getText().toString();
+        String fullRoomString = "Sala " + room;
+//        fullRoomString = fullRoomString + " " + room;
         roomEdit.setText(fullRoomString);
 
     }
@@ -482,6 +493,10 @@ public class MainActivity extends AppCompatActivity {
                     {
                         room = line;
                     }
+                    else if(lineCounter == 6)
+                    {
+                        tvOption = line;
+                    }
                     lineCounter += 1;
                 }
 
@@ -492,6 +507,8 @@ public class MainActivity extends AppCompatActivity {
                     ipAddress = "";
                     devIp = "";
                     settingsPwd = "0410";
+                    room = "";
+                    tvOption = "Samsung";
                 }
                 else if(lineCounter == 1)
                 {
@@ -499,21 +516,38 @@ public class MainActivity extends AppCompatActivity {
                     ipAddress = "";
                     devIp = "";
                     settingsPwd = "0410";
+                    room = "";
+                    tvOption = "Samsung";
                 }
                 else if(lineCounter == 2)
                 {
                     ipAddress = "";
                     devIp = "";
                     settingsPwd = "0410";
+                    room = "";
+                    tvOption = "Samsung";
                 }
                 else if(lineCounter == 3)
                 {
                     devIp = "";
                     settingsPwd = "0410";
+                    room = "";
+                    tvOption = "Samsung";
                 }
                 else if(lineCounter == 4)
                 {
                     settingsPwd = "0410";
+                    room = "";
+                    tvOption = "Samsung";
+                }
+                else if(lineCounter == 5)
+                {
+                    room = "";
+                    tvOption = "Samsung";
+                }
+                else if(lineCounter == 6)
+                {
+                    tvOption = "Samsung";
                 }
 
                 System.out.println(settingsPwd);
@@ -776,7 +810,7 @@ public class MainActivity extends AppCompatActivity {
 
                             String toastText = "";
 
-                                                  {
+                            {
                                 String cookieLongText = responseCookies.get(0);
                                 String[] stringSplit = cookieLongText.split(";");
                                 String newSessionId = stringSplit[0].split("=")[1];
@@ -810,13 +844,27 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    void sendSamsungToggleCmd() throws IOException
+    void sendTvToggleCmd() throws IOException
     {
         OkHttpClient client = new OkHttpClient();
 
+        String endpoint = "";
+
+        switch (tvOption) {
+            case "Samsung":
+                endpoint = "/sendCmdSamsung";
+                break;
+            case "LG Grupo 1":
+                endpoint = "/sendCmdlg1";
+                break;
+            case "LG Grupo 2":
+                endpoint = "/sendCmdlg2";
+                break;
+        }
 
         Request request = new Request.Builder()
-                .url("http://" + devIp + "/sendCmdSamsung")
+//                .url("http://" + devIp + "/sendCmdSamsung")
+                .url("http://" + devIp + endpoint)
                 .get()
                 .addHeader("User-Agent", "PostmanRuntime/7.15.0")
                 .addHeader("Accept", "*/*")
@@ -1004,7 +1052,7 @@ public class MainActivity extends AppCompatActivity {
                             }
                             else
                             {
-                                sendSamsungToggleCmd();
+                                sendTvToggleCmd();
                             }
 
 
@@ -1106,4 +1154,3 @@ public class MainActivity extends AppCompatActivity {
     }
 
 }
-

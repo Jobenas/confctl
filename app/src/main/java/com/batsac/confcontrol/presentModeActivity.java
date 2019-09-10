@@ -46,6 +46,8 @@ public class presentModeActivity extends AppCompatActivity {
     String devIp;
     String room;
 
+    String tvOption;
+
     public String settingsPwd;
 
     int connected = 0;
@@ -72,6 +74,7 @@ public class presentModeActivity extends AppCompatActivity {
         connected = parseInt(getIntent().getStringExtra("connected"));
         devIp = getIntent().getStringExtra("devIp");
         room = getIntent().getStringExtra("room");
+        tvOption = getIntent().getStringExtra("tvOption");
 
         final ImageButton presentationButton = findViewById(R.id.presentationButton);
         final ImageButton returnContactButton = findViewById(R.id.backButton);
@@ -102,6 +105,7 @@ public class presentModeActivity extends AppCompatActivity {
                                 intent.putExtra("presentation", "true");
                                 intent.putExtra("connected", "1");
                                 intent.putExtra("devIp", devIp);
+                                intent.putExtra("tvOption", tvOption);
 
 
                                 startActivity(intent);
@@ -149,6 +153,7 @@ public class presentModeActivity extends AppCompatActivity {
                         intent.putExtra("devIp", devIp);
                         intent.putExtra("connected", "1");
                         intent.putExtra("room", room);
+                        intent.putExtra("tvOption", tvOption);
 
                         startActivity(intent);
 
@@ -185,6 +190,7 @@ public class presentModeActivity extends AppCompatActivity {
             connected = parseInt(getIntent().getStringExtra("connected"));
             devIp = getIntent().getStringExtra("devIp");
             room = getIntent().getStringExtra("room");
+            tvOption = getIntent().getStringExtra("tvOption");
         }
         else
         {
@@ -291,10 +297,10 @@ public class presentModeActivity extends AppCompatActivity {
                     else if(lineCounter == 5)
                     {
                         room = line;
-                        TextView roomEdit = findViewById(R.id.textview1);
-                        String fullRoomString = roomEdit.getText().toString();
-                        fullRoomString = fullRoomString + " " + room;
-                        roomEdit.setText(fullRoomString);
+                    }
+                    else if(lineCounter == 6)
+                    {
+                        tvOption = line;
                     }
                     lineCounter += 1;
                 }
@@ -306,6 +312,8 @@ public class presentModeActivity extends AppCompatActivity {
                     ipAddress = "";
                     devIp = "";
                     settingsPwd = "0410";
+                    room = "";
+                    tvOption = "Samsung";
                 }
                 else if(lineCounter == 1)
                 {
@@ -313,21 +321,38 @@ public class presentModeActivity extends AppCompatActivity {
                     ipAddress = "";
                     devIp = "";
                     settingsPwd = "0410";
+                    room = "";
+                    tvOption = "Samsung";
                 }
                 else if(lineCounter == 2)
                 {
                     ipAddress = "";
                     devIp = "";
                     settingsPwd = "0410";
+                    room = "";
+                    tvOption = "Samsung";
                 }
                 else if(lineCounter == 3)
                 {
                     devIp = "";
                     settingsPwd = "0410";
+                    room = "";
+                    tvOption = "Samsung";
                 }
                 else if(lineCounter == 4)
                 {
                     settingsPwd = "0410";
+                    room = "";
+                    tvOption = "Samsung";
+                }
+                else if(lineCounter == 5)
+                {
+                    room = "";
+                    tvOption = "Samsung";
+                }
+                else if(lineCounter == 6)
+                {
+                    tvOption = "Samsung";
                 }
 
                 System.out.println(settingsPwd);

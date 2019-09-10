@@ -9,8 +9,11 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.View.OnClickListener;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Spinner;
 import android.widget.Toast;
 
 import java.io.BufferedReader;
@@ -20,6 +23,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.ArrayDeque;
 
 public class settingsActivity extends AppCompatActivity {
 
@@ -29,6 +33,9 @@ public class settingsActivity extends AppCompatActivity {
     String devIp;
     String settingsPwd;
     String room;
+    String tvOption;
+
+    Spinner spinner;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,6 +53,15 @@ public class settingsActivity extends AppCompatActivity {
 
         Button saveButton = findViewById(R.id.saveIPButton);
         Button backButton = findViewById(R.id.backButton);
+
+        spinner = findViewById(R.id.tvSpinner);
+
+        ArrayAdapter<CharSequence>  adapter = ArrayAdapter.createFromResource(this,
+                R.array.tvOptions, android.R.layout.simple_spinner_dropdown_item);
+
+        spinner.setAdapter(adapter);
+
+//        spinner.setOnItemClickListener(new CustomOnItemSelectedListener());
 
         Context context = this;
         File directory = context.getFilesDir();
@@ -87,6 +103,10 @@ public class settingsActivity extends AppCompatActivity {
                     {
                         room = line;
                     }
+                    else if(lineCounter == 6)
+                    {
+                        tvOption = line;
+                    }
                     lineCounter += 1;
                 }
 
@@ -98,6 +118,7 @@ public class settingsActivity extends AppCompatActivity {
                     devIp = "";
                     settingsPwd = "0410";
                     room = "";
+                    tvOption = "Samsung";
 
                 }
                 else if(lineCounter == 1)
@@ -107,6 +128,7 @@ public class settingsActivity extends AppCompatActivity {
                     devIp = "";
                     settingsPwd = "0410";
                     room = "";
+                    tvOption = "Samsung";
                 }
                 else if(lineCounter == 2)
                 {
@@ -114,21 +136,29 @@ public class settingsActivity extends AppCompatActivity {
                     devIp = "";
                     settingsPwd = "0410";
                     room = "";
+                    tvOption = "Samsung";
                 }
                 else if(lineCounter == 3)
                 {
                     devIp = "";
                     settingsPwd = "0410";
                     room = "";
+                    tvOption = "Samsung";
                 }
                 else if(lineCounter == 4)
                 {
                     settingsPwd = "0410";
                     room = "";
+                    tvOption = "Samsung";
                 }
                 else if(lineCounter == 5)
                 {
                     room = "";
+                    tvOption = "Samsung";
+                }
+                else if(lineCounter == 6)
+                {
+                    tvOption = "Samsung";
                 }
 
                 userEdit.setText(user);
@@ -137,6 +167,7 @@ public class settingsActivity extends AppCompatActivity {
                 devIpEdit.setText(devIp);
                 appPwd.setText(settingsPwd);
                 roomEdit.setText(room);
+                spinner.setSelection(adapter.getPosition(tvOption));
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
             } catch (IOException e) {
@@ -153,9 +184,23 @@ public class settingsActivity extends AppCompatActivity {
                 devIp = devIpEdit.getText().toString();
                 settingsPwd = appPwd.getText().toString();
                 room = roomEdit.getText().toString();
+                long spinnerValue= spinner.getSelectedItemId();
+
+                if (spinnerValue == 0)
+                {
+                    tvOption = "Samsung";
+                }
+                else if(spinnerValue == 1)
+                {
+                    tvOption = "LG Grupo 1";
+                }
+                else if(spinnerValue == 2)
+                {
+                    tvOption = "LG Grupo 2";
+                }
 
                 String fileString = user + "\n" + pwd + "\n" + ipAddress + "\n" + devIp + "\n" +
-                        settingsPwd + "\n" + room + "\n";
+                        settingsPwd + "\n" + room + "\n" + tvOption + "\n";
 
                 System.out.println(fileString);
 

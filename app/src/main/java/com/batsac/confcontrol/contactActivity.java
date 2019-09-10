@@ -54,6 +54,7 @@ public class contactActivity extends AppCompatActivity {
     String pwd;
     String ipAddress;
     String room;
+    String tvOption;
 
     int connected = 0;
 
@@ -91,6 +92,7 @@ public class contactActivity extends AppCompatActivity {
         connected = parseInt(getIntent().getStringExtra("connected"));
         devIp = getIntent().getStringExtra("devIp");
         room = getIntent().getStringExtra("room");
+        tvOption = getIntent().getStringExtra("tvOption");
 
         try {
             getSiteList();
@@ -188,6 +190,7 @@ public class contactActivity extends AppCompatActivity {
                         intent.putExtra("connected", "1");
                         intent.putExtra("devIp", devIp);
                         intent.putExtra("room", room);
+                        intent.putExtra("tvOption", tvOption);
 
                         startActivity(intent);
 
@@ -220,6 +223,7 @@ public class contactActivity extends AppCompatActivity {
             connected = parseInt(getIntent().getStringExtra("connected"));
             devIp = getIntent().getStringExtra("devIp");
             room = getIntent().getStringExtra("room");
+            tvOption = getIntent().getStringExtra("tvOption");
         }
         else
         {
@@ -398,10 +402,10 @@ public class contactActivity extends AppCompatActivity {
                     else if(lineCounter == 5)
                     {
                         room = line;
-                        TextView roomEdit = findViewById(R.id.textview1);
-                        String fullRoomString = roomEdit.getText().toString();
-                        fullRoomString = fullRoomString + " " + room;
-                        roomEdit.setText(fullRoomString);
+                    }
+                    else if(lineCounter == 6)
+                    {
+                        tvOption = line;
                     }
                     lineCounter += 1;
                 }
@@ -413,6 +417,8 @@ public class contactActivity extends AppCompatActivity {
                     ipAddress = "";
                     devIp = "";
                     settingsPwd = "0410";
+                    room = "";
+                    tvOption = "Samsung";
                 }
                 else if(lineCounter == 1)
                 {
@@ -420,21 +426,38 @@ public class contactActivity extends AppCompatActivity {
                     ipAddress = "";
                     devIp = "";
                     settingsPwd = "0410";
+                    room = "";
+                    tvOption = "Samsung";
                 }
                 else if(lineCounter == 2)
                 {
                     ipAddress = "";
                     devIp = "";
                     settingsPwd = "0410";
+                    room = "";
+                    tvOption = "Samsung";
                 }
                 else if(lineCounter == 3)
                 {
                     devIp = "";
                     settingsPwd = "0410";
+                    room = "";
+                    tvOption = "Samsung";
                 }
                 else if(lineCounter == 4)
                 {
                     settingsPwd = "0410";
+                    room = "";
+                    tvOption = "Samsung";
+                }
+                else if(lineCounter == 5)
+                {
+                    room = "";
+                    tvOption = "Samsung";
+                }
+                else if(lineCounter == 6)
+                {
+                    tvOption = "Samsung";
                 }
 
                 System.out.println(settingsPwd);
@@ -1074,6 +1097,7 @@ public class contactActivity extends AppCompatActivity {
                                 intent.putExtra("type", "call");
                                 intent.putExtra("presentation", "false");
                                 intent.putExtra("devIp", devIp);
+                                intent.putExtra("tvOption", devIp);
                                 if(connected == 0)
                                 {
                                     intent.putExtra("connected", "0");
@@ -1198,6 +1222,7 @@ public class contactActivity extends AppCompatActivity {
                                 intent.putExtra("type", "conference");
                                 intent.putExtra("presentation", "false");
                                 intent.putExtra("devIp", devIp);
+                                intent.putExtra("tvOption", tvOption);
                                 if(connected == 0)
                                 {
                                     intent.putExtra("connected", "0");

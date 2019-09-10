@@ -44,6 +44,7 @@ public class callControl extends AppCompatActivity {
     String pwd;
     String ipAddress;
     String room;
+    String tvOption;
 
     int connected = 0;
 
@@ -79,6 +80,7 @@ public class callControl extends AppCompatActivity {
         connected = parseInt(getIntent().getStringExtra("connected"));
         presentation = getIntent().getStringExtra("presentation");
         devIp = getIntent().getStringExtra("devIp");
+        tvOption = getIntent().getStringExtra("tvOption");
 
         System.out.println("Got call type: " + callType);
 
@@ -119,6 +121,7 @@ public class callControl extends AppCompatActivity {
                         intent.putExtra("presentation", presentation);
                         intent.putExtra("type", callType);
                         intent.putExtra("devIp", devIp);
+                        intent.putExtra("tvOption", tvOption);
 
                         startActivity(intent);
 
@@ -267,6 +270,7 @@ public class callControl extends AppCompatActivity {
             acCSRFToken = getIntent().getStringExtra("acCSRFToken");
             connected = parseInt(getIntent().getStringExtra("connected"));
             devIp = getIntent().getStringExtra("devIp");
+            tvOption = getIntent().getStringExtra("tvOption");
         }
         else
         {
@@ -472,10 +476,10 @@ public class callControl extends AppCompatActivity {
                     else if(lineCounter == 5)
                     {
                         room = line;
-                        TextView roomEdit = findViewById(R.id.textview1);
-                        String fullRoomString = roomEdit.getText().toString();
-                        fullRoomString = fullRoomString + " " + room;
-                        roomEdit.setText(fullRoomString);
+                    }
+                    else if(lineCounter == 6)
+                    {
+                        tvOption = line;
                     }
                     lineCounter += 1;
                 }
@@ -487,6 +491,8 @@ public class callControl extends AppCompatActivity {
                     ipAddress = "";
                     devIp = "";
                     settingsPwd = "0410";
+                    room = "";
+                    tvOption = "Samsung";
                 }
                 else if(lineCounter == 1)
                 {
@@ -494,21 +500,38 @@ public class callControl extends AppCompatActivity {
                     ipAddress = "";
                     devIp = "";
                     settingsPwd = "0410";
+                    room = "";
+                    tvOption = "Samsung";
                 }
                 else if(lineCounter == 2)
                 {
                     ipAddress = "";
                     devIp = "";
                     settingsPwd = "0410";
+                    room = "";
+                    tvOption = "Samsung";
                 }
                 else if(lineCounter == 3)
                 {
                     devIp = "";
                     settingsPwd = "0410";
+                    room = "";
+                    tvOption = "Samsung";
                 }
                 else if(lineCounter == 4)
                 {
                     settingsPwd = "0410";
+                    room = "";
+                    tvOption = "Samsung";
+                }
+                else if(lineCounter == 5)
+                {
+                    room = "";
+                    tvOption = "Samsung";
+                }
+                else if(lineCounter == 6)
+                {
+                    tvOption = "Samsung";
                 }
 
                 System.out.println(settingsPwd);
@@ -894,6 +917,7 @@ public class callControl extends AppCompatActivity {
                         intent.putExtra("acCSRFToken", acCSRFToken);
                         intent.putExtra("devIp", devIp);
                         intent.putExtra("connected", "1");
+                        intent.putExtra("tvOption", tvOption);
 
                         startActivity(intent);
                     }
@@ -988,6 +1012,7 @@ public class callControl extends AppCompatActivity {
                         intent.putExtra("acCSRFToken", acCSRFToken);
                         intent.putExtra("devIp", devIp);
                         intent.putExtra("connected", "1");
+                        intent.putExtra("tvOption", tvOption);
 
                         startActivity(intent);
                     }

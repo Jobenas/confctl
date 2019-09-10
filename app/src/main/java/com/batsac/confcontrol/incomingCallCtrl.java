@@ -44,6 +44,7 @@ public class incomingCallCtrl extends AppCompatActivity {
     String pwd;
     String ipAddress;
     String room;
+    String tvOption;
 
     int connected = 0;
 
@@ -76,6 +77,7 @@ public class incomingCallCtrl extends AppCompatActivity {
         presentation = getIntent().getStringExtra("presentation");
         callType = getIntent().getStringExtra("type");
         devIp = getIntent().getStringExtra("devIp");
+        tvOption = getIntent().getStringExtra("tvOption");
 
         final ImageButton upButton = findViewById(R.id.upButton);
         final ImageButton downButton = findViewById(R.id.downButton);
@@ -247,6 +249,7 @@ public class incomingCallCtrl extends AppCompatActivity {
                         intent.putExtra("presentation", presentation);
                         intent.putExtra("type", callType);
                         intent.putExtra("devIp", devIp);
+                        intent.putExtra("tvOption", tvOption);
                         if(connected == 0)
                         {
                             intent.putExtra("connected", "0");
@@ -298,6 +301,7 @@ public class incomingCallCtrl extends AppCompatActivity {
             acCSRFToken = getIntent().getStringExtra("acCSRFToken");
             connected = parseInt(getIntent().getStringExtra("connected"));
             devIp = getIntent().getStringExtra("devIp");
+            tvOption = getIntent().getStringExtra("tvOption");
         }
         else
         {

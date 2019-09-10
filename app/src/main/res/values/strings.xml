@@ -29,7 +29,8 @@
     <string name="title_activity_present_mode">presentModeActivity</string>
     <string name="contact_view_title_string">SALAS y OFICINAS DE VIDEOCONFERENCIA</string>
     <string name="contact_instruction1_string">Seleccione las salas a las que requiere conectarse,</string>
-    <string name="contact_instruction2_string">luego preseione CREAR CONFERENCIA</string>
+    <string name="contact_instruction2_string">luego presione CREAR CONFERENCIA</string>
+    <string name="contact_instruction3_string">Seleccione una o más salas y luego presione CREAR CONFERENCIA</string>
     <string name="call_control_string1">Antes de salir de la Sala, por favor</string>
     <string name="call_control_string2">apagar la luz de la sala y</string>
     <string name="call_control_string3">dejar las sillas ordenadas</string>
@@ -37,4 +38,9 @@
     <string name="pwd_title_string">Por Favor ingresar su contraseña</string>
     <string name="input_pwd_button_string">Ingresar</string>
     <string name="pwd_back_button_string">Regresar</string>
+    <string-array name="tvOptions">
+        <item>Samsung</item>
+        <item>LG Grupo 1</item>
+        <item>LG Grupo 2</item>
+    </string-array>
 </resources>
